@@ -15,7 +15,7 @@ on_exit() {
 
 if [ $# -ne 3 ]
 then
-  echo "Usage: firehol-tgz logfile tag outdir"
+  echo "Usage: firehol-tgz logfile outdir tag|branch"
   exit 1
 fi
 
@@ -24,43 +24,55 @@ logfile="$1"
 shift
 exec 8> $logfile
 
+packdir=`pwd`
+cd "$1"
+shift
+outdir=`pwd`
+cd "$packdir"
+tag="$1"
+shift
+
 echo "Bringing mirrors up to date..."
 echo "Bringing mirrors up to date..." >&8
 mirror >&8 || exit
 
-packdir=`pwd`
-tag="$1"
-version=`echo $tag | sed -e 's/^v//'`
-shift
-cd "$1"
-outdir=`pwd`
-cd "$packdir"
-
-set +e
-git --git-dir=$repo tag -v $tag > $tmpdir/tag.info 2>&1
-set -e
-
-if grep "^error: " $tmpdir/tag.info
+branch=""
+if git show-ref --verify --quiet refs/heads/$tag
 then
-  grep "^error: " $tmpdir/tag.info >&8
-  echo "Has the source been tagged with a signature and pushed? e.g.:"
-  echo "  git tag -s v2.x.y"
-  echo "  git push origin v2.x.y"
-  echo ""
-  echo "To remove a bad tag, delete it locally, remotely and on mirror:"
-  echo "  git tag -d v2.x.y"
-  echo "  git push origin :refs/tags/v2.x.y"
-  echo "  git --git-dir $repo tag -d v2.0.0-pre1"
-  exit 1
-fi
+  branch="Y"
+  version="$tag"
+  echo "Building from branch $tag (no signature check)"
+  echo "Building from branch $tag (no signature check)" >&8
+else
+  version=`echo $tag | sed -e 's/^v//'`
+  echo "Building from tag $tag"
+  echo "Building from tag $tag" >&8
+  set +e
+  git --git-dir=$repo tag -v $tag > $tmpdir/tag.info 2>&1
+  set -e
 
-if ! grep -q "gpg: Good signature" $tmpdir/tag.info
-then
-  echo "Cannot use tag $version for release - no good signature found"
-  cat $tmpdir/tag.info
-  echo "Cannot use tag $version for release - no good signature found" >&8
-  cat $tmpdir/tag.info >&8
-  exit 1
+  if grep "^error: " $tmpdir/tag.info
+  then
+    grep "^error: " $tmpdir/tag.info >&8
+    echo "Has the source been tagged with a signature and pushed? e.g.:"
+    echo "  git tag -s v2.x.y"
+    echo "  git push origin v2.x.y"
+    echo ""
+    echo "To remove a bad tag, delete it locally, remotely and on mirror:"
+    echo "  git tag -d v2.x.y"
+    echo "  git push origin :refs/tags/v2.x.y"
+    echo "  git --git-dir $repo tag -d v2.x.y"
+    exit 1
+  fi
+
+  if ! grep -q "gpg: Good signature" $tmpdir/tag.info
+  then
+    echo "Cannot use tag $version for release - no good signature found"
+    cat $tmpdir/tag.info
+    echo "Cannot use tag $version for release - no good signature found" >&8
+    cat $tmpdir/tag.info >&8
+    exit 1
+  fi
 fi
 
 echo "Preparing an archive of firehol $version"
@@ -72,6 +84,16 @@ cd $tmpdir/build
 tar xfz ../package/firehol-src.tar.gz
 cd firehol
 
+if [ "$branch" ]
+then
+  v="$tag-`date +%Y-%m-%d`"
+  mv NEWS NEWS.orig
+  echo "Automatic build: $v" > NEWS
+  cat NEWS.orig >> NEWS
+  rm -f NEWS.orig
+  sed -i -e "s/^AC_INIT.*/AC_INIT([firehol],[$v],[firehol-dev@lists.firehol.org])/" configure.ac
+  sed -i -e "s/^FIREHOL_SCRIPT_VERSION=.*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
+fi
 fakeroot ./autogen.sh 2>&8 >&8
 fakeroot ./configure --enable-maintainer-mode --without-autosave --without-autosave6 2>&8 >&8
 fakeroot make dist 2>&8 >&8
