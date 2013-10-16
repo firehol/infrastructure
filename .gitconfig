@@ -1,0 +1,10 @@
+[user]
+	email = firehol@firehol.org
+	name = FireHOL Infrastructure User
+
+[alias]
+        di = diff
+        co = checkout
+        br = branch
+        st = status
+        s = status --short

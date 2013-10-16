@@ -36,3 +36,23 @@ These mirrors are used to perform local git operations by other facilities,
 as well as providing a fallback.
 
 See doc/mirrors.txt for setup information.
+
+
+Key Checking/Signing
+--------------------
+Any public keys imported will be used to validate signatures against
+the git repositories.
+
+See doc/gpg.txt for more information.
+
+
+Build from tag
+--------------
+The script bin/firehol-tgz can be used to build a releasable but unsigned
+set of files from a correctly signed tag:
+  firehol-tgz logfile tag existing-output-dir
+
+The output is the tar-file compressed with various schemes and checksums
+for them as well as manuals, README and ChangeLog.
+ChangeLog, README and 
+

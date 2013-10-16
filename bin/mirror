@@ -9,7 +9,7 @@ do
   if [ -d $dir ]
   then
      cd $dir
-     git remote update
+     git remote update > /dev/null
   else
      mkdir -p $dir
      cd $dir/..
