@@ -15,11 +15,13 @@ firehol, who is a member of group firehol.
 Create the user in the normal way, then as root:
   cd /home
   rm -rf firehol
-  git clone https://github.com/philwhineray/firehol-infrastructure.git
-  chown -R firehol:firehol
+  git clone https://github.com/philwhineray/firehol-infrastructure.git firehol
+  chown -R firehol:firehol firehol
   find firehol -type d -exec chmod g+s \{\} \;
 
-This will allow any user in the firehol group to pull updates.
+To update the firehol user's copy of the project:
+  sudo -u firehol -i
+  git pull
 
 
 Facilities
