@@ -1,0 +1,36 @@
+                           FireHOL Infrastructure
+                           **********************
+
+This repository is devoted to maintaining scripts and information
+related to releasing FireHOL and maintaining its servers.
+
+Each facility provided is given a brief description and a pointer to
+set-up/maintenance documentation.
+
+Prerequisites
+=============
+This repository should be exported as the home directory of a user,
+firehol, who is a member of group firehol.
+
+Create the user in the normal way, then as root:
+  cd /home
+  rm -rf firehol
+  git clone https://github.com/philwhineray/firehol-infrastructure.git
+  chown -R firehol:firehol
+  find firehol -type d -exec chmod g+s \{\} \;
+
+This will allow any user in the firehol group to pull updates.
+
+
+Facilities
+==========
+
+Mirroring
+---------
+Mirrors of other git repositories (in particular the official firehol
+repository) are maintained. See /etc/firehol-mirrors.conf for a list.
+
+These mirrors are used to perform local git operations by other facilities,
+as well as providing a fallback.
+
+See doc/mirrors.txt for setup information.

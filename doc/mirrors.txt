@@ -1,0 +1,16 @@
+                             FireHOL Git Mirrors
+                             *******************
+
+Create the file /etc/firehol-mirrors.conf with lines of the form:
+  local-dir.git  remote-repository
+
+Note that the --mirror flag to git will be used, so all local directories
+will end .git.
+
+The following (as root) will create the default mirrors:
+	cat > /etc/firehol-mirrors.conf <<- END
+	/home/firehol/mirrors/firehol.git https://github.com/ktsaou/firehol.git
+	/home/firehol/mirrors/firehol-infrastructure.git https://github.com/philwhineray/firehol-infrastructure.git
+	END
+
+Then add the command /home/firehol/bin/mirror to a cron-job.
