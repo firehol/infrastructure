@@ -1,0 +1,3 @@
+This directory is used by the github-hook.php script to request that
+the automated user take some action, hence its permissions are 777,
+since it will be invoked by the web server user.

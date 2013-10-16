@@ -54,5 +54,11 @@ set of files from a correctly signed tag:
 
 The output is the tar-file compressed with various schemes and checksums
 for them as well as manuals, README and ChangeLog.
-ChangeLog, README and 
 
+
+GitHub hooks
+------------
+Ensure that the web server can create requests to be processed:
+  chmod 777 web/requests
+
+See doc/github-hook.txt for more details.

@@ -1,0 +1,16 @@
+                           GitHub Hooks
+                           ************
+
+Add the following to the nginx server configuration:
+
+	location /github-hook.php {
+		alias /home/firehol/web/github-hook.php;
+		fastcgi_pass  unix:/var/run/php-fpm.sock;
+		include       fastcgi_params;
+	}
+
+Under the github repository settings, add a webhook URL:
+        http://firehol.org/github-hook.php
+
+The PHP script parses the incoming JSON and creates build instructions
+in web/requests which are acted on by a cron-job.
