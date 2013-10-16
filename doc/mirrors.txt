@@ -9,8 +9,9 @@ will end .git.
 
 The following (as root) will create the default mirrors:
 	cat > /etc/firehol-mirrors.conf <<- END
-	/home/firehol/mirrors/firehol.git https://github.com/ktsaou/firehol.git
-	/home/firehol/mirrors/firehol-infrastructure.git https://github.com/philwhineray/firehol-infrastructure.git
+	# local-dir remote-repo auto-build-tarfiles
+	/home/firehol/mirrors/firehol.git https://github.com/ktsaou/firehol.git Y
+	/home/firehol/mirrors/firehol-infrastructure.git https://github.com/philwhineray/firehol-infrastructure.git N
 	END
 
 Then add the command /home/firehol/bin/mirror to a cron-job.

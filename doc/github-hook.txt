@@ -15,6 +15,19 @@ Under the github repository settings, add a webhook URL:
 The PHP script parses the incoming JSON and creates build instructions
 in web/requests which are acted on by a cron-job.
 
+Server configuration
+====================
+Only repositories and branches that are listed will be built automatically
+(since only branches that the scripts understand how to build can be used).
+
+cat - > /etc/firehol-build.conf <<- END
+	# Format:
+	#   repo branch
+	# The same repo may be used multiple times to allow multiple branches
+	https://github.com/ktsaou/fireho.git master
+	END
+
+
 Appendix
 ========
 Commit hooks:

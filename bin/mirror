@@ -4,16 +4,23 @@ set -e
 
 conf=/etc/firehol-mirrors.conf
 
-while read dir repo
+while read dir repo build
 do
-  if [ -d $dir ]
-  then
-     cd $dir
-     git remote update > /dev/null
-  else
-     mkdir -p $dir
-     cd $dir/..
-     rmdir $dir
-     git clone --mirror $repo
-  fi
+  case $dir in
+    '#'*)
+      :
+    ;;
+    *)
+      if [ -d $dir ]
+      then
+         cd $dir
+         git remote update > /dev/null
+      else
+         mkdir -p $dir
+         cd $dir/..
+         rmdir $dir
+         git clone --mirror $repo
+      fi
+    ;;
+  esac
 done < $conf

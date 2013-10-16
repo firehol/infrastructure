@@ -1,0 +1,92 @@
+#!/bin/sh
+
+set -e
+dl=/home/web/firehol/download
+tmp=/home/web/firehol/tmp
+
+# Just in case we forgot
+chmod 777 $HOME/web/requests
+
+cd $HOME/web/requests
+
+extract_request() {
+  local f="$1"
+
+  url=`sed -ne 's/^URL: //p' $f`
+  ref=`sed -ne 's/^Ref: //p' $f`
+  tag=`sed -ne 's/^Ref: .*[^/]\/\(.*\)/\1/p' $f`
+  email=`sed -ne 's/^Email: //p' $f`
+  action=`sed -ne 's/^Action: //p' $f`
+
+  case $action in
+      build)
+        :
+      ;;
+
+      *)
+        echo "Processing error: Unknown action" >> $f
+        return 1
+      ;;
+  esac
+
+  case $ref in
+      refs/tags/*)
+        grep -q "^$url\>" /etc/firehol-build.conf || return 0
+      ;;
+
+      refs/heads/*)
+        grep -q "^$url.git *$tag" /etc/firehol-build.conf || return 0
+      ;;
+
+      *)
+        echo "Processing error: Unknown ref" >> $f
+        return 1
+      ;;
+  esac
+
+
+  echo "$url	$tag	$email	$action"
+  return 0
+}
+
+> /tmp/requests.$$
+for i in req.*
+do
+  if [ -f $i ]
+  then
+    if extract_request $i >> /tmp/requests.$$
+    then
+      rm -f $i
+    else
+      mv $i rejected.$i
+    fi
+  fi
+done
+
+set +e
+while read url ref email action
+do
+  cat - > /tmp/request-email.$$ <<!
+From: FireHOL builds <firehol@firehol.org>
+To: $email
+Subject: Build results for $url $ref
+
+The output is now available at:
+  http://vps.firehol.org/download/unsigned/$ref
+
+Your build log is below...
+--
+!
+  rm -rf $tmp/$ref.old
+  rm -rf $tmp/$ref.new
+  mkdir -p $tmp/$ref.new
+  /home/firehol/bin/firehol-tgz /tmp/request-build-log.$$ $tmp/$ref.new $ref
+  test -d $dl/unsigned/$ref && mv $dl/unsigned/$ref $tmp/$ref.old
+  mv $tmp/$ref.new $dl/unsigned/$ref
+  cat /tmp/request-build-log.$$ >> /tmp/request-email.$$
+  /usr/lib/sendmail -t < /tmp/request-email.$$
+  rm -f /tmp/request-build-log.$$
+  rm -f /tmp/request-email.$$
+done < /tmp/requests.$$
+
+rm -f /tmp/requests.$$
