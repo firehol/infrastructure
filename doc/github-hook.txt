@@ -27,6 +27,9 @@ cat - > /etc/firehol-build.conf <<- END
 	https://github.com/ktsaou/fireho.git master
 	END
 
+Add the following to the firehol user's crontab:
+  * * * * * /home/firehol/bin/process-requests > /dev/null 2> /dev/null
+
 
 Appendix
 ========

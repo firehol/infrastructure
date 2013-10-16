@@ -4,6 +4,11 @@ set -e
 dl=/home/web/firehol/download
 tmp=/home/web/firehol/tmp
 
+# Stop two from running at the same time
+mkdir -p $tmp
+exec 200> $tmp/process-requests.lck
+flock -n 200 || exit 0
+
 # Just in case we forgot
 chmod 777 $HOME/web/requests
 
