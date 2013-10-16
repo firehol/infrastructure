@@ -14,3 +14,14 @@ Under the github repository settings, add a webhook URL:
 
 The PHP script parses the incoming JSON and creates build instructions
 in web/requests which are acted on by a cron-job.
+
+Appendix
+========
+Commit hooks:
+  https://help.github.com/articles/post-receive-hooks
+
+Handy for debugging:
+  http://requestb.in/
+
+  e.g. curl -X POST -d "fizz=buzz" http://requestb.in/1j5898a1
+       firefox http://requestb.in/1j5898a1?inspect
