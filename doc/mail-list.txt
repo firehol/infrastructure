@@ -77,3 +77,11 @@ Backing up
 These are the key files for re-creating the mailing list:
   /var/lib/mailman/archives/private/firehol-devs.mbox/firehol-devs.mbox
   /var/lib/mailman/archives/private/firehol-support.mbox/firehol-support.mbox
+
+For the list members use the mailman-subscribers.py script which is from:
+  http://www.msapiro.net/mailman-subscribers.py
+Usage:
+  ./mailman-subscribers.py -c -o out.csv lists.firehol.org firehol-devs pass
+
+Note that the script does not deal well with the complex passwords, so
+the adminpw may need editing internally.
