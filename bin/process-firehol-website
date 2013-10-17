@@ -1,0 +1,50 @@
+#!/bin/sh
+
+set -e
+
+#
+# This script is notified by process-requests that a new firehol website
+# should be deployed.
+#
+
+if [ $# -ne 4 ]
+then
+  echo "Usage: process-firehol-tgz logile repo-url ref email"
+  exit 1
+fi
+
+log="$1"
+shift
+url="$1"
+shift
+ref="$1"
+shift
+email="$1"
+shift
+
+awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" /etc/firehol-mirrors.conf > /tmp/repo.$$
+
+repo=`cat /tmp/repo.$$`
+if [ ! "$repo" -o ! -d "$repo" ]
+then
+  echo "$url is not a mirrored repo - see /etc/firehol-mirrors.conf"
+  rm -f /tmp/repo.$$
+  exit 1
+fi
+rm -f /tmp/repo.$$
+
+echo "Bringing mirrors up to date..." > $log
+mirror > $log 2>&1 || exit
+
+rm -rf /home/web/firehol/tmp/www.old
+rm -rf /home/web/firehol/tmp/www
+
+mkdir -p /home/web/firehol/tmp
+cd /home/web/firehol/tmp
+git archive --remote="$repo" --format=tar.gz --prefix=www/ $ref > web.tar.gz
+tar xfz web.tar.gz
+test -d /home/web/firehol/www && mv /home/web/firehol/www /home/web/firehol/tmp/www.old
+mv www /home/web/firehol/.
+rm web.tar.gz
+echo "The new website is now available at:"
+echo "  http://vps.firehol.org/"
