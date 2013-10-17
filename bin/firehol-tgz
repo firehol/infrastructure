@@ -1,7 +1,5 @@
 #!/bin/sh
 
-repo=/home/firehol/mirrors/firehol.git
-
 set -e
 
 tmpdir=`mktemp -d`
@@ -13,17 +11,17 @@ on_exit() {
   return 0
 }
 
-if [ $# -ne 3 ]
+if [ $# -ne 4 ]
 then
-  echo "Usage: firehol-tgz logfile outdir tag|branch"
+  echo "Usage: firehol-tgz logfile url outdir tag|branch"
   exit 1
 fi
 
-
 logfile="$1"
 shift
-exec 8> $logfile
 
+url="$1"
+shift
 packdir=`pwd`
 cd "$1"
 shift
@@ -32,9 +30,20 @@ cd "$packdir"
 tag="$1"
 shift
 
+awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" /etc/firehol-mirrors.conf > $tmpdir/repo
+
+repo=`cat $tmpdir/repo`
+if [ ! "$repo" -o ! -d "$repo" ]
+then
+  echo "$url is not a mirrored repo - see /etc/firehol-mirrors.conf"
+  exit 1
+fi
+
+exec > $logfile
+exec 2> $logfile
+
 echo "Bringing mirrors up to date..."
-echo "Bringing mirrors up to date..." >&8
-mirror >&8 || exit
+mirror || exit
 
 branch=""
 if git show-ref --verify --quiet refs/heads/$tag
@@ -42,18 +51,15 @@ then
   branch="Y"
   version="$tag"
   echo "Building from branch $tag (no signature check)"
-  echo "Building from branch $tag (no signature check)" >&8
 else
   version=`echo $tag | sed -e 's/^v//'`
   echo "Building from tag $tag"
-  echo "Building from tag $tag" >&8
   set +e
   git --git-dir=$repo tag -v $tag > $tmpdir/tag.info 2>&1
   set -e
 
   if grep "^error: " $tmpdir/tag.info
   then
-    grep "^error: " $tmpdir/tag.info >&8
     echo "Has the source been tagged with a signature and pushed? e.g.:"
     echo "  git tag -s v2.x.y"
     echo "  git push origin v2.x.y"
@@ -69,14 +75,11 @@ else
   then
     echo "Cannot use tag $version for release - no good signature found"
     cat $tmpdir/tag.info
-    echo "Cannot use tag $version for release - no good signature found" >&8
-    cat $tmpdir/tag.info >&8
     exit 1
   fi
 fi
 
 echo "Preparing an archive of firehol $version"
-echo "Preparing an archive of firehol $version" >&8
 git archive --remote="$repo" --format=tar.gz --prefix=firehol/ $tag > $tmpdir/package/firehol-src.tar.gz
 
 mkdir -p $tmpdir/build
@@ -94,9 +97,9 @@ then
   sed -i -e "s/^AC_INIT.*/AC_INIT([firehol],[$v],[firehol-dev@lists.firehol.org])/" configure.ac
   sed -i -e "s/^FIREHOL_SCRIPT_VERSION=.*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
 fi
-fakeroot ./autogen.sh 2>&8 >&8
-fakeroot ./configure --enable-maintainer-mode --without-autosave --without-autosave6 2>&8 >&8
-fakeroot make dist 2>&8 >&8
+fakeroot ./autogen.sh
+fakeroot ./configure --enable-maintainer-mode --without-autosave --without-autosave6
+fakeroot make dist
 
 mkdir -p $tmpdir/dist
 mv *.tar.* $tmpdir/dist
@@ -118,4 +121,3 @@ cp $tmpdir/build/firehol/doc/firehol-manual.pdf $outdir/.
 cd $packdir
 
 echo "Archive creation successful"
-echo "Archive creation successful" >&8

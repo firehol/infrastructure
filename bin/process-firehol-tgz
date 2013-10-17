@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -e
+
+#
+# This script is notified by process-requests that new firehol tar-files
+# should be built.
+#
+# It uses firehol-tgz to do the work of building the files and then moves
+# the result into the website downloads area.
+#
+
+if [ $# -ne 4 ]
+then
+  echo "Usage: process-firehol-tgz logile repo-url ref email"
+  exit 1
+fi
+
+log="$1"
+shift
+url="$1"
+shift
+ref="$1"
+shift
+email="$1"
+shift
+
+dl=/home/web/firehol/download
+tmp=/home/web/firehol/tmp
+
+rm -rf $tmp/$ref.old
+rm -rf $tmp/$ref.new
+
+mkdir -p $tmp/$ref.new
+firehol-tgz "$log" "$url" "$tmp/$ref.new" "$ref"
+test -d $dl/unsigned/$ref && mv $dl/unsigned/$ref $tmp/$ref.old
+mv $tmp/$ref.new $dl/unsigned/$ref
+echo "The output is now available at:"
+echo "  http://vps.firehol.org/download/unsigned/$ref"

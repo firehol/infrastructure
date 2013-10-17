@@ -3,13 +3,23 @@
 PATH=$PATH:$HOME/bin export PATH
 
 set -e
-dl=/home/web/firehol/download
-tmp=/home/web/firehol/tmp
 
 # Stop two from running at the same time
+tmp=/home/web/firehol/tmp
 mkdir -p $tmp
 exec 200> $tmp/process-requests.lck
 flock -n 200 || exit 0
+
+tmpdir=`mktemp -d`
+mkdir -p $tmpdir/package
+trap on_exit EXIT
+on_exit() {
+  cd $HOME
+  rm -rf $tmpdir
+  return 0
+}
+
+dl=/home/web/firehol/download
 
 # Just in case we forgot
 chmod 777 $HOME/web/requests
@@ -38,11 +48,11 @@ extract_request() {
 
   case $ref in
       refs/tags/*)
-        grep -q "^$url\>" /etc/firehol-build.conf || return 0
+        grep "^$url.git *tag" /etc/firehol-build.conf > $tmpdir/ref || return 0
       ;;
 
       refs/heads/*)
-        grep -q "^$url.git *$tag" /etc/firehol-build.conf || return 0
+        grep "^$url.git *$tag" /etc/firehol-build.conf > $tmpdir/ref || return 0
       ;;
 
       *)
@@ -51,17 +61,23 @@ extract_request() {
       ;;
   esac
 
+  script=`awk '{print $3}' $tmpdir/ref`
+  if [ ! "$script" ]
+  then
+    echo "Processing error: no script in config" >> $f
+    return 1
+  fi
 
-  echo "$url	$tag	$email	$action"
+  echo "$url	$tag	$email	$script"
   return 0
 }
 
-> /tmp/requests.$$
+> $tmpdir/requests
 for i in req.*
 do
   if [ -f $i ]
   then
-    if extract_request $i >> /tmp/requests.$$
+    if extract_request $i >> $tmpdir/requests
     then
       rm -f $i
     else
@@ -71,42 +87,33 @@ do
 done
 
 set +e
-while read url ref email action
+while read url ref email script
 do
-  cat - > /tmp/request-email.$$ <<!
-From: FireHOL builds <firehol@firehol.org>
-To: $email
-!
-  rm -rf $tmp/$ref.old
-  rm -rf $tmp/$ref.new
-  mkdir -p $tmp/$ref.new
-  firehol-tgz /tmp/request-build-log.$$ $tmp/$ref.new $ref >> /tmp/tgz.$$ 2>&1
+  $script "$tmpdir/build.log" "$url" "$ref" "$email" >> $tmpdir/script.log 2>&1
+
   if [ $? -eq 0 ]
   then
-    test -d $dl/unsigned/$ref && mv $dl/unsigned/$ref $tmp/$ref.old
-    mv $tmp/$ref.new $dl/unsigned/$ref
-    cat - >> /tmp/request-email.$$ <<!
-Subject: Build success for $url $ref
+    cat - > $tmpdir/email <<- END
+	From: FireHOL builds <firehol@firehol.org>
+	To: $email
+	Subject: Build success for $url $ref
 
-The output is now available at:
-  http://vps.firehol.org/download/unsigned/$ref
-
-Your build log is below...
---
-!
+	END
   else
-    cat - >> /tmp/request-email.$$ <<!
-Subject: Build fail for $url $ref
+    cat - > $tmpdir/email <<- END
+	From: FireHOL builds <firehol@firehol.org>
+	To: $email
+	Subject: Build fail for $url $ref
 
-Your build log is below...
---
-!
+	END
   fi
-  cat /tmp/tgz.$$ /tmp/request-build-log.$$ >> /tmp/request-email.$$
-  /usr/lib/sendmail -t < /tmp/request-email.$$
-  rm -f /tmp/request-build-log.$$
-  rm -f /tmp/request-email.$$
-  rm -f /tmp/tgz.$$
-done < /tmp/requests.$$
 
-rm -f /tmp/requests.$$
+  cat $tmpdir/script.log >> $tmpdir/email
+  cat - >> $tmpdir/email <<- END
+
+	Your build log is below...
+	--
+	END
+  cat $tmpdir/build.log >> $tmpdir/email
+  /usr/lib/sendmail -t < $tmpdir/email
+done < $tmpdir/requests

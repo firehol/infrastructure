@@ -22,9 +22,12 @@ Only repositories and branches that are listed will be built automatically
 
 cat - > /etc/firehol-build.conf <<- END
 	# Format:
-	#   repo branch
+	#   repo branch script-to-run
 	# The same repo may be used multiple times to allow multiple branches
-	https://github.com/ktsaou/fireho.git master
+	# The special branch 'tag' applies to any tag
+	https://github.com/ktsaou/firehol.git tag /home/firehol/bin/process-firehol-tgz
+	https://github.com/ktsaou/firehol.git master /home/firehol/bin/process-firehol-tgz
+	https://github.com/philwhineray/firehol-website.git master /home/firehol/bin/process-firehol-website
 	END
 
 Add the following to the firehol user's crontab:
