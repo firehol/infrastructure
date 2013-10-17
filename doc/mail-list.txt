@@ -43,4 +43,37 @@ To import an existing mbox:
 
 N.B. Whenever arch is run, use this to ensure that incoming mails are
 correctly handled:
-   chown -R list:web /var/lib/mailman/archives/private/*
+  chown -R list:web /var/lib/mailman/archives/private/*
+
+
+Archive Search
+==============
+The Gmane archives of the mailing list are searchable. To set up a
+search box on the mailing list archive replace the default templates:
+
+  mkdir /var/lib/mailman/lists/firehol-devs/en
+  cp mailman/devs-archtoc.html \
+        /var/lib/mailman/lists/firehol-devs/en/archtoc.html
+  cp mailman/devs-archtocnombox.html \
+        /var/lib/mailman/lists/firehol-devs/en/archtocnombox.html
+
+  mkdir /var/lib/mailman/lists/firehol-support/en
+  cp mailman/support-archtoc.html \
+        /var/lib/mailman/lists/firehol-support/en/archtoc.html
+  cp mailman/support-archtocnombox.html \
+        /var/lib/mailman/lists/firehol-support/en/archtocnombox.html
+
+Ensure the new templates are used for incoming mail:
+  /etc/init.d/mailman restart
+
+Rebuild the archives:
+  /usr/lib/mailman/bin/arch firehol-devs
+  /usr/lib/mailman/bin/arch firehol-support
+  chown -R list:web /var/lib/mailman/archives/private/*
+
+
+Backing up
+==========
+These are the key files for re-creating the mailing list:
+  /var/lib/mailman/archives/private/firehol-devs.mbox/firehol-devs.mbox
+  /var/lib/mailman/archives/private/firehol-support.mbox/firehol-support.mbox
