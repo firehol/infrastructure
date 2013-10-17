@@ -1,0 +1,46 @@
+                           FireHOL Mailing Lists
+                           *********************
+
+The FireHOL lists use mailman as installed by default on Ubuntu/Debian
+and customised as described below.
+
+The mailman documentation is here: http://list.org/docs.html
+
+Web archive
+===========
+Connecting mailman to nginx also requires installation of fcgiwrap.
+
+The nginx configuration for lists.firehol.org is stored as
+nginx/sites-available/firehol-lists. It should be copied to the
+live server and linked as sites-enabled/15-firehol-lists.
+
+
+Postfix
+=======
+Ensure lists.firehol.org is added to /etc/postfix/main.cf for:
+  mydestination
+  relay_domains
+
+and restart postfix:
+  /etc/init.d/postfix restart
+
+
+Setting up
+==========
+The .cfg files are stored under the mailman directory.
+
+For each of firehol-devs and firehol-support:
+  /usr/lib/mailman/bin/newlist --urlhost=lists.firehol.org
+  /usr/lib/mailman/bin/config_list -i firehol-xyz.cfg firehol-xyz
+
+  Visit the website and add descriptions, review all settings as required
+  and re-save them with:
+    /usr/lib/mailman/bin/config_list -o firehol-xyz.cfg firehol-xyz
+
+To import an existing mbox:
+  /usr/lib/mailman/bin/arch --wipe firehol-devs firehol-devs.mbox
+  /usr/lib/mailman/bin/arch --wipe firehol-support firehol-support.mbox
+
+N.B. Whenever arch is run, use this to ensure that incoming mails are
+correctly handled:
+   chown -R list:web /var/lib/mailman/archives/private/*

@@ -1,0 +1,37 @@
+server {
+	listen   80;
+
+	root /home/web/firehol/www;
+	access_log /var/log/nginx/firehol-access.log;
+	error_log /var/log/nginx/firehol-error.log;
+	index index.html index.htm;
+
+	server_name firehol.org www.firehol.org vps.firehol.org;
+
+        if ($host ~* ^www\.firehol\.org) {
+          rewrite ^(.*)$ http://firehol.org$1? permanent;
+        }
+
+	location ~ /\.ht {
+		deny all;
+	}
+
+        location /robots.txt { alias /home/web/firehol/static/robots.txt; }
+        location /googleac3935750bab1075.html {
+           alias /home/web/firehol/static/googleac3935750bab1075.html;
+        }
+
+        location /manual { alias /home/web/firehol/manual; allow all; }
+
+        location /download {
+		alias /home/web/firehol/download;
+		allow all;
+		autoindex on;
+	}
+
+	location /github-hook.php {
+		alias /home/firehol/web/github-hook.php;
+		fastcgi_pass  unix:/var/run/php-fpm.sock;
+		include       fastcgi_params;
+	}
+}
