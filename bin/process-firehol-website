@@ -73,5 +73,6 @@ else
 fi
 echo "Deployment of $ref as $dest completed" >> $log 2>&1
 rm -rf $dest
-echo "The new website is now available at:"
-echo "  http://vps.firehol.org/"
+echo "The new website should now be available at:"
+echo "  http://$dest.firehol.org/"
+echo "(if not, check the logs and your nginx.conf)"
