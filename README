@@ -62,3 +62,9 @@ Ensure that the web server can create requests to be processed:
   chmod 777 web/requests
 
 See doc/github-hook.txt for more details.
+
+
+Website
+-------
+See doc/website.txt for information on how to install nanoc, the tool
+used to create the FireHOL website.

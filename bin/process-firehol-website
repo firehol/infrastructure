@@ -2,6 +2,8 @@
 
 set -e
 
+PATH=$PATH:/usr/local/bin export PATH
+
 #
 # This script is notified by process-requests that a new firehol website
 # should be deployed.
@@ -22,6 +24,20 @@ shift
 email="$1"
 shift
 
+case "$ref" in
+  download|static|tmp|www)
+    echo "Not allowed to deploy a website branch called $ref"
+    exit 1
+  ;;
+  master)
+    dest=www
+  ;;
+  *)
+    dest="$ref"
+  ;;
+esac
+echo "Deploying branch $ref as $dest"
+
 awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" /etc/firehol-mirrors.conf > /tmp/repo.$$
 
 repo=`cat /tmp/repo.$$`
@@ -36,15 +52,26 @@ rm -f /tmp/repo.$$
 echo "Bringing mirrors up to date..." > $log
 mirror > $log 2>&1 || exit
 
-rm -rf /home/web/firehol/tmp/www.old
-rm -rf /home/web/firehol/tmp/www
+rm -rf /home/web/firehol/tmp/$dest.old
+rm -rf /home/web/firehol/tmp/$dest
 
 mkdir -p /home/web/firehol/tmp
 cd /home/web/firehol/tmp
-git archive --remote="$repo" --format=tar.gz --prefix=www/ $ref > web.tar.gz
-tar xfz web.tar.gz
-test -d /home/web/firehol/www && mv /home/web/firehol/www /home/web/firehol/tmp/www.old
-mv www /home/web/firehol/.
-rm web.tar.gz
+git archive --remote="$repo" --format=tar.gz --prefix=$dest/ $ref > web$$.tar.gz
+tar xfz web$$.tar.gz
+rm -rf web$$.tar.gz
+if [ -f $dest/Makefile ]
+then
+  cd $dest
+  make >> $log 2>&1
+  test -d /home/web/firehol/$dest && mv /home/web/firehol/$dest /home/web/firehol/tmp/$dest.old
+  mv output /home/web/firehol/$dest
+  cd ..
+else
+  test -d /home/web/firehol/$dest && mv /home/web/firehol/$dest /home/web/firehol/tmp/$dest.old
+  mv $dest /home/web/firehol/.
+fi
+echo "Deployment of $ref as $dest completed" >> $log 2>&1
+rm -rf $dest
 echo "The new website is now available at:"
 echo "  http://vps.firehol.org/"

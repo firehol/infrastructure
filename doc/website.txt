@@ -1,0 +1,8 @@
+The website is built using a tool called nanoc.
+
+To install:
+  http://nanoc.ws/install/
+
+Essentially, this as root:
+  aptitude install rubygems
+  gem install nanoc

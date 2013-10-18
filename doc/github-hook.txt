@@ -28,6 +28,7 @@ cat - > /etc/firehol-build.conf <<- END
 	https://github.com/ktsaou/firehol.git tag /home/firehol/bin/process-firehol-tgz
 	https://github.com/ktsaou/firehol.git master /home/firehol/bin/process-firehol-tgz
 	https://github.com/philwhineray/firehol-website.git master /home/firehol/bin/process-firehol-website
+	https://github.com/philwhineray/firehol-website.git test /home/firehol/bin/process-firehol-website
 	END
 
 Add the following to the firehol user's crontab:
