@@ -80,7 +80,7 @@ else
 fi
 
 echo "Preparing an archive of firehol $version"
-git archive --remote="$repo" --format=tar.gz --prefix=firehol/ $tag > $tmpdir/package/firehol-src.tar.gz
+git --git-dir="$repo" archive --format=tar.gz --prefix=firehol/ $tag > $tmpdir/package/firehol-src.tar.gz
 
 mkdir -p $tmpdir/build
 cd $tmpdir/build
@@ -94,8 +94,8 @@ then
   echo "Automatic build: $v" > NEWS
   cat NEWS.orig >> NEWS
   rm -f NEWS.orig
-  sed -i -e "s/^AC_INIT.*/AC_INIT([firehol],[$v],[firehol-dev@lists.firehol.org])/" configure.ac
-  sed -i -e "s/^FIREHOL_SCRIPT_VERSION=.*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
+  sed -i -e "s/^AC_INIT(\[firehol\],\[[0-9][^,]*,/AC_INIT([firehol],[$v],/" configure.ac
+  sed -i -e "s/^FIREHOL_SCRIPT_VERSION=[0-9].*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
 fi
 fakeroot ./autogen.sh
 fakeroot ./configure --enable-maintainer-mode --without-autosave --without-autosave6
