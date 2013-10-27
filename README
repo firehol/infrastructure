@@ -27,6 +27,10 @@ To update the firehol user's copy of the project:
 Facilities
 ==========
 
+Release Process
+---------------
+See doc/release.txt
+
 Mirroring
 ---------
 Mirrors of other git repositories (in particular the official firehol
