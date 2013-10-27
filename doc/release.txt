@@ -8,16 +8,17 @@ Tag the commit with a signature:
   git tag -s v2.x.y
 
 Push the tag (origin is the default name of the remote repository):
-  git push origin v2.x.y
+  git push origin tag v2.x.y
 
 The github hooks will automatically start the build process and
 create a released tar-file.
 
-If there is an error in the tag it is possible to delete it locally,
-re-create it at a new commit and push it over the old one:
+If there is an error in the tag it is possible to move to a new commit,
+delete the old tag locally, re-create it and push it over the old one:
+  ....
   git tag -d v2.x.y
   git tag -s v2.x.y
-  git push origin v2.x.y
+  git push origin tag v2.x.y
 
 If for some reason the tag needs removing entirely, it can be deleted
 locally, from the remote server, and from the mirror:
@@ -26,3 +27,13 @@ locally, from the remote server, and from the mirror:
   ssh firehol.org
   sudo -i -u firehol
   git --git-dir mirrors/firehol.git tag -d v2.x.y
+
+TODO
+====
+The outputs go to:
+  http://firehol.org/download/unsigned/....somewhere...
+
+Some extra infrastructure is needed to allow the committer to verify
+that the content of the built tar-files match what they tagged and if
+so to gpg-sign the files and move them to a "signed" location and update
+a "latest" link if appropriate.
