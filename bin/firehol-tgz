@@ -46,7 +46,7 @@ echo "Bringing mirrors up to date..."
 mirror || exit
 
 branch=""
-if git show-ref --verify --quiet refs/heads/$tag
+if git --git-dir="$repo" show-ref --verify --quiet refs/heads/$tag
 then
   branch="Y"
   version="$tag"
