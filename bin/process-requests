@@ -116,4 +116,5 @@ do
 	END
   cat $tmpdir/build.log >> $tmpdir/email
   /usr/lib/sendmail -t < $tmpdir/email
+  rm -f $tmpdir/build.log
 done < $tmpdir/requests

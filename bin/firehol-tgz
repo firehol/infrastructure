@@ -40,7 +40,7 @@ then
 fi
 
 exec > $logfile
-exec 2> $logfile
+exec 2>&1
 
 echo "Bringing mirrors up to date..."
 mirror || exit
@@ -91,7 +91,8 @@ if [ "$branch" ]
 then
   if [ -x ./packaging/packver ]
   then
-    v="`./packaging/packver`"
+    sed -ie "s/echo \"\$version\"/echo \"\$tag\$version\"/" ./packaging/packver
+    v="$tag-`./packaging/packver`"
   else
     v="$tag-`date +%Y-%m-%d`"
   fi
