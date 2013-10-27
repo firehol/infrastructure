@@ -89,9 +89,15 @@ cd firehol
 
 if [ "$branch" ]
 then
-  v="$tag-`date +%Y-%m-%d`"
+  if [ -x ./packaging/packver ]
+  then
+    v="`./packaging/packver`"
+  else
+    v="$tag-`date +%Y-%m-%d`"
+  fi
   mv NEWS NEWS.orig
   echo "Automatic build: $v" > NEWS
+  echo "" >> NEWS
   cat NEWS.orig >> NEWS
   rm -f NEWS.orig
   sed -i -e "s/^AC_INIT(\[firehol\],\[[0-9][^,]*,/AC_INIT([firehol],[$v],/" configure.ac
