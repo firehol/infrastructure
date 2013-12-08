@@ -34,6 +34,11 @@ server {
            allow all;
         }
 
+        location /webalizer {
+		alias /home/web/firehol/webalizer;
+		allow all;
+	}
+
         location /download {
 		alias /home/web/firehol/download;
 		allow all;

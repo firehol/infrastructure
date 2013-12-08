@@ -6,3 +6,9 @@ To install:
 Essentially, this as root:
   aptitude install rubygems
   gem install nanoc
+
+mkdir -p /home/web/firehol
+mkdir -p /home/web/firehol/download
+mkdir -p /home/web/firehol/static
+mkdir -p /home/web/firehol/tmp
+mkdir -p /home/web/firehol/webalizer
