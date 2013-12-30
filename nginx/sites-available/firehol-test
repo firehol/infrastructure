@@ -12,6 +12,11 @@ server {
           rewrite ^(.*)$ http://firehol.org$1? permanent;
         }
 
+	error_page 404 /404.html;
+	location /404.html {
+		internal;
+	}
+
 	location ~ /\.ht {
 		deny all;
 	}
@@ -21,18 +26,37 @@ server {
            alias /home/web/firehol/static/googleac3935750bab1075.html;
         }
 
+        # Perma-URL in manual
+        location /manual/latest {
+          rewrite .* /manual permanent;
+        }
+
+        location /firehol-manual.pdf {
+           alias /home/web/firehol/download/unsigned/ipv6/firehol-manual.pdf;
+           allow all;
+        }
         location /firehol-manual.html {
-           alias /home/web/firehol/download/unsigned/master/firehol-manual.html;
+           alias /home/web/firehol/download/unsigned/ipv6/firehol-manual.html;
            allow all;
         }
         location /firehol-manual.css {
-           alias /home/web/firehol/download/unsigned/master/firehol-manual.css;
+           alias /home/web/firehol/download/unsigned/ipv6/firehol-manual.css;
            allow all;
         }
         location /firehol-services.html {
-           alias /home/web/firehol/download/unsigned/master/firehol-services.html;
+           alias /home/web/firehol/download/unsigned/ipv6/firehol-services.html;
            allow all;
         }
+
+        location /firehol-manual {
+           alias /home/web/firehol/download/unsigned/ipv6/html;
+           allow all;
+	}
+
+        location /webalizer {
+		alias /home/web/firehol/webalizer;
+		allow all;
+	}
 
         location /download {
 		alias /home/web/firehol/download;
