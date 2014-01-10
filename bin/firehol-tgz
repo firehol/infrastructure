@@ -127,13 +127,11 @@ cp $tmpdir/build/firehol/doc/firehol-manual.css $outdir/.
 cp $tmpdir/build/firehol/doc/firehol-manual.pdf $outdir/.
 
 # Put the chunked version in a separate directory if it has been built
-if [ -f $tmpdir/build/firehol/doc/index.html ]
+if [ -f $tmpdir/build/firehol/doc/html/index.html ]
 then
   mkdir $outdir/html
-  cp $tmpdir/build/firehol/doc/*.html $outdir/html/.
-  cp $tmpdir/build/firehol/doc/*.css $outdir/html/.
-  rm -f $outdir/html/firehol-manual.html
-  rm -f $outdir/html/firehol-services.html
+  cp $tmpdir/build/firehol/doc/html/*.html $outdir/html/.
+  cp $tmpdir/build/firehol/doc/html/*.css $outdir/html/.
 fi
 
 cd $packdir
