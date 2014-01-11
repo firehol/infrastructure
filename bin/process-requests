@@ -94,15 +94,17 @@ do
   if [ $? -eq 0 ]
   then
     cat - > $tmpdir/email <<- END
-	From: FireHOL builds <firehol@firehol.org>
+	From: FireHOL builds <builds@firehol.org>
 	To: $email
+	CC: builds@firehol.org
 	Subject: Build success for $url $ref
 
 	END
   else
     cat - > $tmpdir/email <<- END
-	From: FireHOL builds <firehol@firehol.org>
+	From: FireHOL builds <builds@firehol.org>
 	To: $email
+	CC: builds@firehol.org
 	Subject: Build fail for $url $ref
 
 	END
