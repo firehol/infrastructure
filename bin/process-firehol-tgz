@@ -10,13 +10,15 @@ set -e
 # the result into the website downloads area.
 #
 
-if [ $# -ne 4 ]
+if [ $# -ne 5 ]
 then
-  echo "Usage: process-firehol-tgz logile repo-url ref email"
+  echo "Usage: process-firehol-tgz logile target repo-url ref email"
   exit 1
 fi
 
 log="$1"
+shift
+target="$1"
 shift
 url="$1"
 shift
@@ -28,12 +30,17 @@ shift
 dl=/home/web/firehol/download
 tmp=/home/web/firehol/tmp
 
-rm -rf $tmp/$ref.old
-rm -rf $tmp/$ref.new
+if [ "$target" = "" ]
+then
+  target="$ref"
+fi
 
-mkdir -p $tmp/$ref.new
-firehol-tgz "$log" "$url" "$tmp/$ref.new" "$ref"
-test -d $dl/unsigned/$ref && mv $dl/unsigned/$ref $tmp/$ref.old
-mv $tmp/$ref.new $dl/unsigned/$ref
+rm -rf $tmp/$target.old
+rm -rf $tmp/$target.new
+
+mkdir -p $tmp/$target.new
+firehol-tgz "$log" "$url" "$tmp/$target.new" "$ref"
+test -d $dl/unsigned/$target && mv $dl/unsigned/$target $tmp/$target.old
+mv $tmp/$target.new $dl/unsigned/$target
 echo "The output is now available at:"
-echo "  http://firehol.org/download/unsigned/$ref"
+echo "  http://firehol.org/download/unsigned/$target"

@@ -1,19 +1,11 @@
                            GitHub Hooks
                            ************
 
-Add the following to the nginx server configuration:
-
-	location /github-hook.php {
-		alias /home/firehol/web/github-hook.php;
-		fastcgi_pass  unix:/var/run/php-fpm.sock;
-		include       fastcgi_params;
-	}
-
+GitHub Configuration
+====================
 Under the github repository settings, add a webhook URL:
         http://firehol.org/github-hook.php
 
-The PHP script parses the incoming JSON and creates build instructions
-in web/requests which are acted on by a cron-job.
 
 Server configuration
 ====================
@@ -22,15 +14,33 @@ Only repositories and branches that are listed will be built automatically
 
 cat - > /etc/firehol-build.conf <<- END
 	# Format:
-	#   repo branch script-to-run
+	#   repo branch script-to-run [override-target]
 	# The same repo may be used multiple times to allow multiple branches
 	# The special branch 'tag' applies to any tag
 	https://github.com/ktsaou/firehol.git tag /home/firehol/bin/process-firehol-tgz
-	https://github.com/ktsaou/firehol.git master /home/firehol/bin/process-firehol-tgz
-	https://github.com/philwhineray/firehol-website.git master /home/firehol/bin/process-firehol-website
-	https://github.com/philwhineray/firehol-website.git test /home/firehol/bin/process-firehol-website
+	https://github.com/ktsaou/firehol.git master /home/firehol/bin/process-firehol-tgz master
+	https://github.com/ktsaou/firehol.git ipv6 /home/firehol/bin/process-firehol-tgz ipv6
+	https://github.com/philwhineray/firehol-website.git master /home/firehol/bin/process-firehol-website www
+	https://github.com/philwhineray/firehol-website.git test /home/firehol/bin/process-firehol-website test
 	END
 
+
+Nginx Configuration
+===================
+Add the following to the nginx server configuration:
+
+	location /github-hook.php {
+		alias /home/firehol/web/github-hook.php;
+		fastcgi_pass  unix:/var/run/php-fpm.sock;
+		include       fastcgi_params;
+	}
+
+The PHP script parses the incoming JSON and creates build instructions
+in web/requests which are acted on by a cron-job.
+
+
+Cron configuration
+==================
 Add the following to the firehol user's crontab:
   * * * * * /home/firehol/bin/process-requests > /dev/null 2> /dev/null
 

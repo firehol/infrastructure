@@ -68,7 +68,10 @@ extract_request() {
     return 1
   fi
 
-  echo "$url	$tag	$email	$script"
+  # Empty target is OK
+  target=`awk '{print $4}' $tmpdir/ref`
+
+  echo "$url	$tag	$email	$script	$target"
   return 0
 }
 
@@ -87,9 +90,9 @@ do
 done
 
 set +e
-while read url ref email script
+while read url ref email script target
 do
-  $script "$tmpdir/build.log" "$url" "$ref" "$email" >> $tmpdir/script.log 2>&1
+  $script "$tmpdir/build.log" "$target" "$url" "$ref" "$email" >> $tmpdir/script.log 2>&1
 
   if [ $? -eq 0 ]
   then

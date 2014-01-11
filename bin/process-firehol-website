@@ -9,13 +9,15 @@ PATH=$PATH:/usr/local/bin export PATH
 # should be deployed.
 #
 
-if [ $# -ne 4 ]
+if [ $# -ne 5 ]
 then
-  echo "Usage: process-firehol-tgz logile repo-url ref email"
+  echo "Usage: process-firehol-tgz logile target repo-url ref email"
   exit 1
 fi
 
 log="$1"
+shift
+target="$1"
 shift
 url="$1"
 shift
@@ -29,14 +31,14 @@ case "$ref" in
     echo "Not allowed to deploy a website branch called $ref"
     exit 1
   ;;
-  master)
-    dest=www
-  ;;
   *)
-    dest="$ref"
+    if [ "$target" = "" ]
+    then
+      target="$ref"
+    fi
   ;;
 esac
-echo "Deploying branch $ref as $dest"
+echo "Deploying branch $ref as $target"
 
 awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" /etc/firehol-mirrors.conf > /tmp/repo.$$
 
@@ -52,27 +54,27 @@ rm -f /tmp/repo.$$
 echo "Bringing mirrors up to date..." > $log
 mirror > $log 2>&1 || exit
 
-rm -rf /home/web/firehol/tmp/$dest.old
-rm -rf /home/web/firehol/tmp/$dest
+rm -rf /home/web/firehol/tmp/$target.old
+rm -rf /home/web/firehol/tmp/$target
 
 mkdir -p /home/web/firehol/tmp
 cd /home/web/firehol/tmp
-git archive --remote="$repo" --format=tar.gz --prefix=$dest/ $ref > web$$.tar.gz
+git archive --remote="$repo" --format=tar.gz --prefix=$target/ $ref > web$$.tar.gz
 tar xfz web$$.tar.gz
 rm -rf web$$.tar.gz
-if [ -f $dest/Makefile ]
+if [ -f $target/Makefile ]
 then
-  cd $dest
+  cd $target
   make >> $log 2>&1
-  test -d /home/web/firehol/$dest && mv /home/web/firehol/$dest /home/web/firehol/tmp/$dest.old
-  mv output /home/web/firehol/$dest
+  test -d /home/web/firehol/$target && mv /home/web/firehol/$target /home/web/firehol/tmp/$target.old
+  mv output /home/web/firehol/$target
   cd ..
 else
-  test -d /home/web/firehol/$dest && mv /home/web/firehol/$dest /home/web/firehol/tmp/$dest.old
-  mv $dest /home/web/firehol/.
+  test -d /home/web/firehol/$target && mv /home/web/firehol/$target /home/web/firehol/tmp/$target.old
+  mv $target /home/web/firehol/.
 fi
-echo "Deployment of $ref as $dest completed" >> $log 2>&1
-rm -rf $dest
+echo "Deployment of $ref as $target completed" >> $log 2>&1
+rm -rf $target
 echo "The new website should now be available at:"
-echo "  http://$dest.firehol.org/"
+echo "  http://$target.firehol.org/"
 echo "(if not, check the logs and your nginx.conf)"
