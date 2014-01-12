@@ -6,6 +6,7 @@ $result = json_decode($payload);
 $ref = $result->{"ref"};
 if ($ref == "") {
   print "ERROR: No ref\n";
+  error_log("ERROR: no ref in payload $payload");
   exit(1);
 }
 
@@ -15,10 +16,12 @@ $url = $repository->{"url"};
 $email = $pusher->{"email"};
 $action = "build";
 
+error_log("Hook Info: URL: $url - $ref - $email - $action - $payload");
+
 print "URL: $url\n";
 print "Ref: $ref\n";
 print "Email: $email\n";
-print "Action: build\n";
+print "Action: $action\n";
 
 $parturl = preg_replace('/.*github.com./', '', $url);
 $fileurl = preg_replace('/[^A-Za-z0-9_-]/', '-', $parturl);
@@ -31,6 +34,6 @@ if (!$fh) {
 fwrite($fh, "URL: $url\n");
 fwrite($fh, "Ref: $ref\n");
 fwrite($fh, "Email: $email\n");
-fwrite($fh, "Action: build\n");
+fwrite($fh, "Action: $action\n");
 fclose($fh);
 ?>
