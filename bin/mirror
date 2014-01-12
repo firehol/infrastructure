@@ -19,7 +19,7 @@ do
          mkdir -p $dir
          cd $dir/..
          rmdir $dir
-         git clone --mirror $repo
+         git clone --mirror $repo $dir
       fi
     ;;
   esac
