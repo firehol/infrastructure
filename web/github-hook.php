@@ -11,21 +11,37 @@ if ($ref == "") {
 }
 
 $pusher = $result->{"pusher"};
+if ($pusher->{"email"} == "") {
+  $pusher = $result->{"committer"};
+}
+
 $repository = $result->{"repository"};
 $url = $repository->{"url"};
 $email = $pusher->{"email"};
 $action = "build";
 
-error_log("Hook Info: URL: $url - $ref - $email - $action - $payload");
+error_log("GutHub Hook: URL: $url - $ref - $email - $action - $payload");
+
+$parturl = preg_replace('/.*github.com./', '', $url);
+$fileurl = preg_replace('/[^A-Za-z0-9_-]/', '-', $parturl);
+$fileref = preg_replace('/[^A-Za-z0-9_-]/', '-', $ref);
+
+if ($email == "") {
+  print "ERROR: No email\n";
+  error_log("ERROR: no email in payload $payload");
+  $fh = fopen("/home/firehol/web/requests/payload.$fileurl.$fileref", "w");
+  if (!$fh) {
+    exit(1);
+  }
+  fwrite($fh, "$payload\n");
+  fclose($fh);
+  exit(1);
+}
 
 print "URL: $url\n";
 print "Ref: $ref\n";
 print "Email: $email\n";
 print "Action: $action\n";
-
-$parturl = preg_replace('/.*github.com./', '', $url);
-$fileurl = preg_replace('/[^A-Za-z0-9_-]/', '-', $parturl);
-$fileref = preg_replace('/[^A-Za-z0-9_-]/', '-', $ref);
 
 $fh = fopen("/home/firehol/web/requests/req.$fileurl.$fileref", "w");
 if (!$fh) {

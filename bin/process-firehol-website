@@ -38,7 +38,7 @@ case "$ref" in
     fi
   ;;
 esac
-echo "Deploying branch $ref as $target"
+echo "Deploying $url branch $ref as $target"
 
 awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" /etc/firehol-mirrors.conf > /tmp/repo.$$
 
