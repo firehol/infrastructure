@@ -64,6 +64,38 @@ server {
 		autoindex on;
 	}
 
+	# Redirects from old site
+        location /services.html {
+          rewrite .* /services permanent;
+	}
+        location /commands.html {
+          rewrite .* /firehol-manual.html permanent;
+	}
+        location /support.html {
+          rewrite .* /getting-help permanent;
+	}
+        location /adding.html {
+          rewrite .* /firehol-manual.html#adding-services permanent;
+	}
+        location /overview.html {
+          rewrite .* / permanent;
+	}
+        location /overview {
+          rewrite .* / permanent;
+	}
+        location /faq.html {
+          rewrite .* /faq permanent;
+	}
+        location /tutorial.html {
+          rewrite .* /tutorial permanent;
+	}
+        location /documentation/ {
+          rewrite .* /invoking permanent;
+	}
+        location /firehol.conf {
+          rewrite .* /firehol-manual.html#firehol.conf permanent;
+	}
+
 	location /github-hook.php {
 		alias /home/firehol/web/github-hook.php;
 		fastcgi_pass  unix:/var/run/php-fpm.sock;
