@@ -1,14 +1,14 @@
 server {
 	listen   80;
 
-	root /home/web/firehol/www;
+	root /home/web/firehol/master;
 	access_log /var/log/nginx/firehol-access.log;
 	error_log /var/log/nginx/firehol-error.log;
 	index index.html index.htm;
 
-	server_name firehol.org www.firehol.org vps.firehol.org;
+	server_name firehol.org www.firehol.org master.firehol.org vps.firehol.org;
 
-        if ($host ~* ^www\.firehol\.org) {
+        if ($host ~* ^(www|master)\.firehol\.org) {
           rewrite ^(.*)$ http://firehol.org$1? permanent;
         }
 
