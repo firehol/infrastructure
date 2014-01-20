@@ -10,12 +10,13 @@ if ($ref == "") {
   exit(1);
 }
 
+$repository = $result->{"repository"};
 $pusher = $result->{"pusher"};
+
 if ($pusher->{"email"} == "") {
-  $pusher = $result->{"committer"};
+  $pusher = $repository->{"owner"};
 }
 
-$repository = $result->{"repository"};
 $url = $repository->{"url"};
 $email = $pusher->{"email"};
 $action = "build";
