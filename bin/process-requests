@@ -99,7 +99,6 @@ do
     cat - > $tmpdir/email <<- END
 	From: FireHOL builds <builds@firehol.org>
 	To: $email
-	CC: builds@firehol.org
 	Subject: Build success for $url $ref
 
 	END
