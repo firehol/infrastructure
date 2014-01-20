@@ -8,6 +8,12 @@ if ($ref == "") {
   print "ERROR: No ref\n";
   error_log("ERROR: no ref in payload $payload");
   exit(1);
+} else {
+  $fh = fopen("/home/firehol/web/requests/payload.latest", "w");
+  if ($fh) {
+    fwrite($fh, "$payload\n");
+    fclose($fh);
+  }
 }
 
 $repository = $result->{"repository"};
@@ -18,10 +24,10 @@ if ($pusher->{"email"} == "") {
 }
 
 $url = $repository->{"url"};
-$email = $pusher->{"email"};
+$email = "firehol-devs@lists.firehol.org";
 $action = "build";
 
-error_log("GutHub Hook: URL: $url - $ref - $email - $action - $payload");
+error_log("GitHub Hook: URL: $url - $ref - $email - $action - $payload");
 
 $parturl = preg_replace('/.*github.com./', '', $url);
 $fileurl = preg_replace('/[^A-Za-z0-9_-]/', '-', $parturl);
@@ -30,12 +36,6 @@ $fileref = preg_replace('/[^A-Za-z0-9_-]/', '-', $ref);
 if ($email == "") {
   print "ERROR: No email\n";
   error_log("ERROR: no email in payload $payload");
-  $fh = fopen("/home/firehol/web/requests/payload.$fileurl.$fileref", "w");
-  if (!$fh) {
-    exit(1);
-  }
-  fwrite($fh, "$payload\n");
-  fclose($fh);
   exit(1);
 }
 
