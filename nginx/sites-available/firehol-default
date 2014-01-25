@@ -96,10 +96,16 @@ server {
           rewrite .* /tutorial permanent;
 	}
         location /documentation/ {
-          rewrite .* /invoking permanent;
+          rewrite .* /tutorial permanent;
 	}
         location /firehol.conf {
           rewrite .* /firehol-manual.html#firehol.conf permanent;
+	}
+        location /trouble.html {
+          rewrite .* /troubleshooting permanent;
+	}
+        location /invoking.html {
+          rewrite .* /firehol-manual.html#firehol permanent;
 	}
 
 	location /github-hook.php {
