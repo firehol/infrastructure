@@ -81,7 +81,7 @@ server {
           rewrite .* / permanent;
 	}
         location /overview {
-          rewrite .* / permanent;
+          rewrite /overview/?$ / permanent;
 	}
         location /faq.html {
           rewrite .* /faq permanent;
