@@ -65,7 +65,7 @@ rm -rf web$$.tar.gz
 if [ -f $target/Makefile ]
 then
   cd $target
-  make >> $log 2>&1
+  make site=$target >> $log 2>&1
   test -d /home/web/firehol/$target && mv /home/web/firehol/$target /home/web/firehol/tmp/$target.old
   mv output /home/web/firehol/$target
   cd ..
