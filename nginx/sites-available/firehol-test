@@ -32,24 +32,24 @@ server {
         }
 
         location /firehol-manual.pdf {
-           alias /home/web/firehol/download/unsigned/ipv6/firehol-manual.pdf;
+           alias /home/web/firehol/download/unsigned/master/firehol-manual.pdf;
            allow all;
         }
         location /firehol-manual.html {
-           alias /home/web/firehol/download/unsigned/ipv6/firehol-manual.html;
+           alias /home/web/firehol/download/unsigned/master/firehol-manual.html;
            allow all;
         }
         location /firehol-manual.css {
-           alias /home/web/firehol/download/unsigned/ipv6/firehol-manual.css;
+           alias /home/web/firehol/download/unsigned/master/firehol-manual.css;
            allow all;
         }
         location /firehol-services.html {
-           alias /home/web/firehol/download/unsigned/ipv6/firehol-services.html;
+           alias /home/web/firehol/download/unsigned/master/firehol-services.html;
            allow all;
         }
 
         location /firehol-manual {
-           alias /home/web/firehol/download/unsigned/ipv6/html;
+           alias /home/web/firehol/download/unsigned/master/html;
            allow all;
 	}
 
