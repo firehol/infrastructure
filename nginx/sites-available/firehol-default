@@ -95,8 +95,20 @@ server {
         location /tutorial.html {
           rewrite .* /tutorial permanent;
 	}
-        location /documentation/ {
-          rewrite .* /tutorial permanent;
+        location /language.html {
+          rewrite .* /guides/firehol-language permanent;
+	}
+        location /fwtest.html {
+          rewrite .* /guides/firewall-testing permanent;
+	}
+        location /default.html {
+          rewrite .* /
+	}
+        location /&G {
+          rewrite .* /
+	}
+        location /firehol.tar.gz {
+          rewrite .* /download/latest
 	}
         location /firehol.conf {
           rewrite .* /firehol-manual.html#firehol.conf permanent;

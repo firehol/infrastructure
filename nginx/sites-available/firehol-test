@@ -8,7 +8,7 @@ server {
 
 	server_name test.firehol.org;
 
-        if ($host ~* ^www\.firehol\.org) {
+        if ($host ~* ^(www|master)\.firehol\.org) {
           rewrite ^(.*)$ http://firehol.org$1? permanent;
         }
 
@@ -89,20 +89,41 @@ server {
         location /tutorial.html {
           rewrite .* /tutorial permanent;
 	}
-        location /documentation/ {
-          rewrite .* /tutorial permanent;
+        location /language.html {
+          rewrite .* /guides/firehol-language permanent;
+	}
+        location /fwtest.html {
+          rewrite .* /guides/firewall-testing permanent;
+	}
+        location /default.html {
+          rewrite .* /;
+	}
+        location /&G {
+          rewrite .* /;
+	}
+        location /firehol.tar.gz {
+          rewrite .* /download/latest;
 	}
         location /firehol.conf {
           rewrite .* /firehol-manual.html#firehol.conf permanent;
 	}
         location /trouble.html {
-          rewrite .* /firehol-manual.html#troubleshooting permanent;
-	}
-        location /troubleshooting/ {
-          rewrite .* /firehol-manual.html#troubleshooting permanent;
+          rewrite .* /guides/troubleshooting permanent;
 	}
         location /invoking.html {
           rewrite .* /firehol-manual.html#firehol permanent;
+	}
+        location /troubleshooting/ {
+          rewrite .* /guides/troubleshooting permanent;
+	}
+        location /invoking/ {
+          rewrite .* /guides/when-firehol-runs permanent;
+	}
+        location /language/ {
+          rewrite .* /guides/firehol-language permanent;
+	}
+        location /fwtest/ {
+          rewrite .* /guides/firewall-testing permanent;
 	}
 
 	location /github-hook.php {
