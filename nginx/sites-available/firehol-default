@@ -28,13 +28,7 @@ server {
 
         # Perma-URL in manual
         location /manual/latest {
-          rewrite .* /manual permanent;
-        }
-        location /manual {
-          # Until the new iframes+javascript version is live
-          alias /home/web/firehol/download/unsigned/master/firehol-manual.html;
-          default_type text/html;
-          allow all;
+          rewrite .* /manual/ permanent;
         }
 
         location /firehol-manual.pdf {
@@ -72,52 +66,73 @@ server {
 
 	# Redirects from old site
         location /services.html {
-          rewrite .* /services permanent;
+          rewrite .* /services/ permanent;
 	}
         location /commands.html {
           rewrite .* /firehol-manual.html permanent;
 	}
         location /support.html {
-          rewrite .* /getting-help permanent;
+          rewrite .* /support/ permanent;
 	}
         location /adding.html {
-          rewrite .* /firehol-manual.html#adding-services permanent;
+          rewrite .* /guides/adding-services/ permanent;
 	}
         location /overview.html {
           rewrite .* / permanent;
 	}
         location /overview {
-          rewrite .* / permanent;
+          rewrite /overview/?$ / permanent;
 	}
         location /faq.html {
-          rewrite .* /faq permanent;
+          rewrite .* /faq/ permanent;
 	}
         location /tutorial.html {
-          rewrite .* /tutorial permanent;
+          rewrite .* /tutorial/ permanent;
 	}
         location /language.html {
-          rewrite .* /guides/firehol-language permanent;
+          rewrite .* /guides/firehol-language/ permanent;
 	}
         location /fwtest.html {
-          rewrite .* /guides/firewall-testing permanent;
+          rewrite .* /guides/firewall-testing/ permanent;
 	}
         location /default.html {
-          rewrite .* /
+          rewrite .* /;
 	}
         location /&G {
-          rewrite .* /
+          rewrite .* /;
 	}
         location /firehol.tar.gz {
-          rewrite .* /download/latest
+          rewrite .* /download/latest;
 	}
         location /firehol.conf {
           rewrite .* /firehol-manual.html#firehol.conf permanent;
 	}
         location /trouble.html {
-          rewrite .* /troubleshooting permanent;
+          rewrite .* /guides/troubleshooting/ permanent;
+	}
+        location /header.html {
+          rewrite .* / permanent;
+	}
+        location /search.html {
+          rewrite .* / permanent;
 	}
         location /invoking.html {
           rewrite .* /firehol-manual.html#firehol permanent;
+	}
+        location /troubleshooting {
+          rewrite .* /guides/troubleshooting/ permanent;
+	}
+        location /invoking {
+          rewrite .* /guides/when-firehol-runs/ permanent;
+	}
+        location /language {
+          rewrite .* /guides/firehol-language/ permanent;
+	}
+        location /fwtest {
+          rewrite .* /guides/firewall-testing/ permanent;
+	}
+        location /getting-help {
+          rewrite .* /support/ permanent;
 	}
 
 	location /github-hook.php {
