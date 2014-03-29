@@ -2,3 +2,9 @@ User-agent: *
 Disallow: /download/*.html$
 Disallow: /download/unsigned/
 Disallow: /webalizer/
+Disallow: /download/latest/*.asc
+Disallow: /download/latest/*.md5
+Disallow: /download/latest/*.sha
+Disallow: /download/latest/*.bz2
+Disallow: /download/latest/*.gz
+Disallow: /download/latest/*.xz
