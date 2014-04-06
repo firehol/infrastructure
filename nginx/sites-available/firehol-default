@@ -108,7 +108,7 @@ server {
           rewrite .* /firehol-manual.html#firehol.conf permanent;
 	}
         location /trouble.html {
-          rewrite .* /guides/troubleshooting/ permanent;
+          rewrite .* /guides/firehol-troubleshooting/ permanent;
 	}
         location /header.html {
           rewrite .* / permanent;
@@ -119,8 +119,11 @@ server {
         location /invoking.html {
           rewrite .* /firehol-manual.html#firehol permanent;
 	}
+        location /guides/troubleshooting {
+          rewrite .* /guides/firehol-troubleshooting/ permanent;
+	}
         location /troubleshooting {
-          rewrite .* /guides/troubleshooting/ permanent;
+          rewrite .* /guides/firehol-troubleshooting/ permanent;
 	}
         location /invoking {
           rewrite .* /guides/when-firehol-runs/ permanent;
