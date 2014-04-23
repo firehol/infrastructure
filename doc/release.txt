@@ -1,6 +1,27 @@
                            Release Process
                            ***************
 
+Pre-release
+===========
+Ensure everything is checked in that should be:
+  git status
+
+Perform a dry-run of the build:
+  git clean -d -f -x
+  ./autogen.sh
+  ./configure --enable-maintainer-mode
+  sed -i -e '1idevelopment' NEWS
+  make dist
+  git co HEAD NEWS
+
+Run any further tests.
+
+Ensure all files are listed in EXTRA_DIST in Makefile.am files as needed:
+  ./packaging/check-contents . firehol-development.tar.gz | less
+
+
+Release
+=======
 To release a new version of FireHOL, commit a change with up to date
 ChangeLog and NEWS (they will be checked before the tag is built).
 
