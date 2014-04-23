@@ -7,12 +7,8 @@ Ensure everything is checked in that should be:
   git status
 
 Perform a dry-run of the build:
-  git clean -d -f -x
-  ./autogen.sh
-  ./configure --enable-maintainer-mode
-  sed -i -e '1idevelopment' NEWS
-  make dist
-  git co HEAD NEWS
+  cd firehol
+  ./packaging/git-build
 
 Run any further tests.
 
