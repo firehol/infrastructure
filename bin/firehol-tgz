@@ -121,8 +121,7 @@ done
 mv $tmpdir/dist/* $outdir/.
 cp $tmpdir/build/firehol/README $outdir/README.txt
 cp $tmpdir/build/firehol/ChangeLog $outdir/ChangeLog.txt
-cp $tmpdir/build/firehol/doc/firehol-manual.html $outdir/.
-cp $tmpdir/build/firehol/doc/firehol-services.html $outdir/.
+cp $tmpdir/build/firehol/doc/firehol-*.html $outdir/.
 cp $tmpdir/build/firehol/doc/firehol-manual.css $outdir/.
 cp $tmpdir/build/firehol/doc/firehol-manual.pdf $outdir/.
 
