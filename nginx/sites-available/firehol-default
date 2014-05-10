@@ -48,11 +48,6 @@ server {
            allow all;
         }
 
-        location /firehol-manual {
-           alias /home/web/firehol/download/unsigned/master/html;
-           allow all;
-	}
-
         location /webalizer {
 		alias /home/web/firehol/webalizer;
 		allow all;
@@ -136,6 +131,12 @@ server {
 	}
         location /getting-help {
           rewrite .* /support/ permanent;
+	}
+        location /packages {
+          rewrite .* /installing/ permanent;
+	}
+        location /firehol-manual {
+          rewrite .* /manual/ permanent;
 	}
 
 	location /github-hook.php {
