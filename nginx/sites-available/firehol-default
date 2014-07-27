@@ -26,9 +26,37 @@ server {
            alias /home/web/firehol/static/googleac3935750bab1075.html;
         }
 
-        # Perma-URL in manual
-        location /manual/latest {
-          rewrite .* /manual/ permanent;
+        location ~ /manual/(.*) {
+          allow all;
+
+          if (-f $request_filename) {
+            break;
+          }
+
+          if (-d $request_filename) {
+            break;
+          }
+
+          if (-d $document_root/firehol-manual/$1) {
+            rewrite /manual/(.*) /firehol-manual/$1 permanent;
+            break;
+          }
+
+          if (-d $document_root/fireqos-manual/$1) {
+            rewrite /manual/(.*) /fireqos-manual/$1 permanent;
+            break;
+          }
+
+          # Perma-URL in manual
+          rewrite /manual/latest /manual permanent;
+        }
+
+        location /firehol-manual/ {
+           allow all;
+        }
+
+        location /fireqos-manual/ {
+           allow all;
         }
 
         location /firehol-manual.pdf {
@@ -39,12 +67,20 @@ server {
            alias /home/web/firehol/download/unsigned/master/firehol-manual.html;
            allow all;
         }
+        location /fireqos-manual.pdf {
+           alias /home/web/firehol/download/unsigned/master/firehol-manual.pdf;
+           allow all;
+        }
+        location /fireqos-manual.html {
+           alias /home/web/firehol/download/unsigned/master/firehol-manual.html;
+           allow all;
+        }
         location /firehol-manual.css {
            alias /home/web/firehol/download/unsigned/master/firehol-manual.css;
            allow all;
         }
         location /firehol-services.html {
-           alias /home/web/firehol/download/unsigned/master/firehol-services.html;
+          rewrite .* /services/ permanent;
            allow all;
         }
 
@@ -134,9 +170,6 @@ server {
 	}
         location /packages {
           rewrite .* /installing/ permanent;
-	}
-        location /firehol-manual {
-          rewrite .* /manual/ permanent;
 	}
 
 	location /github-hook.php {
