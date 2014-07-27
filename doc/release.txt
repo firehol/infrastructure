@@ -24,6 +24,10 @@ ChangeLog and NEWS (they will be checked before the tag is built).
 Tag the commit with a signature:
   git tag -s v2.x.y -m "Release version 2.x.y"
 
+N.B. pre-release tags should be of the form v2.x.y-pre.z or v2.x.y-rc.z
+in order to comply with http://semver.org/ without limiting the number
+of such releases.
+
 Push the tag (origin is the default name of the remote repository):
   git push origin tag v2.x.y
 
