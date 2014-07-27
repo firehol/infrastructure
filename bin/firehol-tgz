@@ -129,8 +129,8 @@ then
   cp $tmpdir/build/firehol/doc/firehol-*.html $outdir/.
   cp $tmpdir/build/firehol/doc/firehol-manual.pdf $outdir/.
 else
-  cp $tmpdir/build/firehol/doc/*/*.html $outdir/.
-  cp $tmpdir/build/firehol/doc/*/*.pdf $outdir/.
+  cp $tmpdir/build/firehol/doc/*/f*.html $outdir/.
+  cp $tmpdir/build/firehol/doc/*/f*.pdf $outdir/.
 fi
 
 # Put the chunked version in a separate directory if it has been built
