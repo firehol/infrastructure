@@ -68,11 +68,11 @@ server {
            allow all;
         }
         location /fireqos-manual.pdf {
-           alias /home/web/firehol/download/unsigned/master/firehol-manual.pdf;
+           alias /home/web/firehol/download/unsigned/master/fireqos-manual.pdf;
            allow all;
         }
         location /fireqos-manual.html {
-           alias /home/web/firehol/download/unsigned/master/firehol-manual.html;
+           alias /home/web/firehol/download/unsigned/master/fireqos-manual.html;
            allow all;
         }
         location /firehol-manual.css {
