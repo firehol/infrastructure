@@ -75,7 +75,13 @@ then
     cp $target.conf /home/web/firehol/$target.conf
     if [ "$restart_needed" ]
     then
-      sudo /etc/init.d/nginx restart
+      sudo nginx -t
+      if [ $? -eq 0 ]
+      then
+        sudo /etc/init.d/nginx restart
+      else
+        failconfig=Y
+      fi
     fi
   fi
   cd ..
@@ -85,6 +91,11 @@ else
 fi
 echo "Deployment of $ref as $target completed" >> $log 2>&1
 rm -rf $target
-echo "The new website should now be available at:"
-echo "  http://$target.firehol.org/"
-echo "(if not, check the logs and your nginx.conf)"
+if [ "$failconfig" ]
+then
+  echo "ERROR: nginx config broken: running on old configuration" 
+else
+  echo "The new website should now be available at:"
+  echo "  http://$target.firehol.org/"
+  echo "(if not, check the logs and your nginx.conf)"
+fi

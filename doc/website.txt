@@ -21,3 +21,10 @@ ln -s /home/web/firehol/master.conf 15-firehol-test
 
 The master site must have a lower number than all the others so that it
 is used by default.
+
+The scripts which deploy the website need to be able to restart nginx,
+so an entry such as the following should be added to /etc/sudoers:
+
+firehol ALL=(ALL:ALL) NOPASSWD: /etc/init.d/nginx restart
+firehol ALL=(ALL:ALL) NOPASSWD: /usr/sbin/nginx -t
+
