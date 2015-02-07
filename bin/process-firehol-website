@@ -70,11 +70,11 @@ then
   mv output /home/web/firehol/$target
   if [ -f nginx.conf ]
   then
+    echo "Checking for new config"
     sed -e "s/NAME/$target/" nginx.conf > $target.conf
-    cmp $target.conf /home/web/firehol/$target.conf && restart_needed=Y
-    cp $target.conf /home/web/firehol/$target.conf
-    if [ "$restart_needed" ]
-    then
+    if cmp $target.conf /home/web/firehol/$target.conf; then
+      echo "Deploying new config"
+      cp $target.conf /home/web/firehol/$target.conf
       sudo nginx -t
       if [ $? -eq 0 ]
       then
@@ -94,8 +94,9 @@ rm -rf $target
 if [ "$failconfig" ]
 then
   echo "ERROR: nginx config broken: running on old configuration" 
-else
-  echo "The new website should now be available at:"
-  echo "  http://$target.firehol.org/"
-  echo "(if not, check the logs and your nginx.conf)"
+  exit 1
 fi
+echo "The new website should now be available at:"
+echo "  http://$target.firehol.org/"
+echo "(if not, check the logs and your nginx.conf)"
+exit 0
