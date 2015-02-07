@@ -68,6 +68,16 @@ then
   make site=$target >> $log 2>&1
   test -d /home/web/firehol/$target && mv /home/web/firehol/$target /home/web/firehol/tmp/$target.old
   mv output /home/web/firehol/$target
+  if [ -f nginx.conf ]
+  then
+    sed -e "s/NAME/$target/" nginx.conf > $target.conf
+    cmp $target.conf /home/web/firehol/$target.conf && restart_needed=Y
+    cp $target.conf /home/web/firehol/$target.conf
+    if [ "$restart_needed" ]
+    then
+      sudo /etc/init.d/nginx restart
+    fi
+  fi
   cd ..
 else
   test -d /home/web/firehol/$target && mv /home/web/firehol/$target /home/web/firehol/tmp/$target.old
