@@ -72,7 +72,7 @@ then
   then
     echo "Checking for new config"
     sed -e "s/NAME/$target/" nginx.conf > $target.conf
-    if cmp $target.conf /home/web/firehol/$target.conf; then
+    if ! cmp $target.conf /home/web/firehol/$target.conf; then
       echo "Deploying new config"
       cp $target.conf /home/web/firehol/$target.conf
       sudo nginx -t
