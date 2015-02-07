@@ -12,3 +12,12 @@ mkdir -p /home/web/firehol/download
 mkdir -p /home/web/firehol/static
 mkdir -p /home/web/firehol/tmp
 mkdir -p /home/web/firehol/webalizer
+
+The sites must be manually installed in nginx the first time, e.g.:
+
+cd /etc/nginx/sites-enabled
+ln -s /home/web/firehol/master.conf 10-firehol-master
+ln -s /home/web/firehol/master.conf 15-firehol-test
+
+The master site must have a lower number than all the others so that it
+is used by default.
