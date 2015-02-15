@@ -19,7 +19,7 @@ cat - > /etc/firehol-build.conf <<- END
 	# The special branch 'tag' applies to any tag
 	https://github.com/ktsaou/firehol.git tag /home/firehol/bin/process-firehol-tgz
 	https://github.com/ktsaou/firehol.git master /home/firehol/bin/process-firehol-tgz master
-	https://github.com/ktsaou/firehol.git ipv6 /home/firehol/bin/process-firehol-tgz ipv6
+	https://github.com/ktsaou/firehol.git stable-v2 /home/firehol/bin/process-firehol-tgz
 	https://github.com/philwhineray/firehol-website.git master /home/firehol/bin/process-firehol-website www
 	https://github.com/philwhineray/firehol-website.git test /home/firehol/bin/process-firehol-website test
 	END

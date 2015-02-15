@@ -25,7 +25,7 @@ git clone --single-branch --branch v"$1" "https://github.com/ktsaou/firehol.git"
 cd firehol
 git tag -v v"$1"
 
-sed -i -e '/GIT_REF=/d' sbin/firehol.in sbin/fireqos.in
+sed -i -e '/GIT_REF=/d' sbin/*.in
 
 baseurl=http://firehol.org/download/unsigned
 for ext in gz bz2 xz
@@ -48,12 +48,23 @@ do
     echo "Unrecognised extension $ext"
     exit 1
   fi
-  tar "$opts" firehol-"$1".tar.$ext firehol-"$1"/sbin/firehol.in firehol-"$1"/sbin/fireqos.in
-  sed -i -e '/GIT_REF=/d' firehol-"$1"/sbin/firehol.in firehol-"$1"/sbin/fireqos.in
-  cmp sbin/firehol.in firehol-"$1"/sbin/firehol.in || diff sbin/firehol.in firehol-"$1"/sbin/firehol.in
-  cmp sbin/fireqos.in firehol-"$1"/sbin/fireqos.in || diff sbin/fireqos.in firehol-"$1"/sbin/fireqos
+  tar "$opts" firehol-"$1".tar.$ext firehol-"$1"/sbin
+  sed -i -e '/GIT_REF=/d' firehol-"$1"/sbin/*.in
+  for i in sbin/*.in
+  do
+    if ! cmp $i firehol-"$1"/$i
+    then
+      diff $i firehol-"$1"/$i
+      error=Y
+    fi
+  done
   rm -rf firehol-"$1"
 done
+
+if [ "$error" ]
+then
+  exit 1
+fi
 
 for ext in gz bz2 xz
 do

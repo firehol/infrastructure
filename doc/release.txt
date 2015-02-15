@@ -60,8 +60,7 @@ identifier for your GPG key e.g.:
   sign-version 2.x.y sanewall
 
 This will check the signature in git, grab the bz2, gz and xz files
-and compare the main firehol and fireqos scripts to ensure the contents
-all match.
+and compare the main scripts in sbin/ to ensure the contents all match.
 
 If everything is OK, detached signatures will be created for each file.
 
@@ -75,6 +74,8 @@ Upload the signatures to the host and move the directory to release:
   v=2.x.y
   sudo -u firehol cp firehol-$v.*.asc $d/unsigned/v$v/
   sudo -u firehol mv $d/unsigned/v$v/ $d/releases/
+
+If this is to be made the latest stable release:
   sudo -u firehol rm $d/latest
   sudo -u firehol ln -s $d/releases/v$v $d/latest
 
