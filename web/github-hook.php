@@ -7,6 +7,11 @@ $ref = $result->{"ref"};
 if ($ref == "") {
   print "ERROR: No ref\n";
   error_log("ERROR: no ref in payload $payload");
+  $fh = fopen("/home/firehol/web/requests/payload.failed", "w");
+  if ($fh) {
+    fwrite($fh, "$payload\n");
+    fclose($fh);
+  }
   exit(1);
 } else {
   $fh = fopen("/home/firehol/web/requests/payload.latest", "w");
