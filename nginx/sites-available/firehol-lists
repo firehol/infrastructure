@@ -1,6 +1,11 @@
 server {
         listen 80;
+        listen 443 ssl;
+        ssl_certificate /home/web/firehol/ssl/nginx.crt;
+        ssl_certificate_key /home/web/firehol/ssl/nginx.key;
+
         server_name lists.firehol.org;
+
         root /usr/lib/cgi-bin;
 	 access_log /var/log/nginx/firehol-lists-access.log;
 	 error_log /var/log/nginx/firehol-lists-error.log;
