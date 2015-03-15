@@ -11,9 +11,14 @@ Install:
 
 mkdir -p /home/web/firehol/ssl/
 cat firehol.crt.pem sub.class2.server.ca.pem > /home/web/firehol/ssl/nginx.crt
-openssl rsa -in firehol.key -out /home/web/firehol/ssl/nginx.key
+openssl rsa -in firehol.key.pem -out /home/web/firehol/ssl/nginx.key
+sudo chgrp web /home/web/firehol/ssl/nginx.key
+sudo chmod 640 /home/web/firehol/ssl/nginx.key
 
 Testing:
 
 openssl x509 -in firehol.crt.pem -text
+cd /home/web/firehol/ssl
 openssl s_server -cert nginx.crt -key nginx.key
+openssl s_client -CAfile sub.class2.server.ca.pem -connect firehol.org:4433
+openssl s_client -connect lists.firehol.org:443
