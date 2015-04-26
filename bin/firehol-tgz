@@ -123,22 +123,23 @@ cp $tmpdir/build/firehol/README $outdir/README.txt
 cp $tmpdir/build/firehol/ChangeLog $outdir/ChangeLog.txt
 cp $tmpdir/build/firehol/doc/*.css $outdir/.
 
+# Put the chunked HTML in a separate directory if it has been built
+if [ -f $tmpdir/build/firehol/doc/html/index.html ]
+then
+  mkdir $outdir/html
+  cp $tmpdir/build/firehol/doc/html/*.html $outdir/html/.
+  cp $tmpdir/build/firehol/doc/html/*.css $outdir/html/.
+  rm -rf $tmpdir/build/firehol/doc/html
+fi
+
 # Copy the single manual or separates, depending on which is there
 if [ -f $tmpdir/build/firehol/doc/firehol-manual.pdf ]
 then
   cp $tmpdir/build/firehol/doc/firehol-*.html $outdir/.
   cp $tmpdir/build/firehol/doc/firehol-manual.pdf $outdir/.
 else
-  cp $tmpdir/build/firehol/doc/*/f*.html $outdir/.
-  cp $tmpdir/build/firehol/doc/*/f*.pdf $outdir/.
-fi
-
-# Put the chunked version in a separate directory if it has been built
-if [ -f $tmpdir/build/firehol/doc/html/index.html ]
-then
-  mkdir $outdir/html
-  cp $tmpdir/build/firehol/doc/html/*.html $outdir/html/.
-  cp $tmpdir/build/firehol/doc/html/*.css $outdir/html/.
+  cp $tmpdir/build/firehol/doc/*/*.html $outdir/.
+  cp $tmpdir/build/firehol/doc/*/*.pdf $outdir/.
 fi
 
 cd $packdir
