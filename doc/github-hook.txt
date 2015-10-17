@@ -17,11 +17,11 @@ cat - > /etc/firehol-build.conf <<- END
 	#   repo branch script-to-run [override-target]
 	# The same repo may be used multiple times to allow multiple branches
 	# The special branch 'tag' applies to any tag
-	https://github.com/ktsaou/firehol.git tag /home/firehol/bin/process-firehol-tgz
-	https://github.com/ktsaou/firehol.git master /home/firehol/bin/process-firehol-tgz master
-	https://github.com/ktsaou/firehol.git stable-v2 /home/firehol/bin/process-firehol-tgz
-	https://github.com/philwhineray/firehol-website.git master /home/firehol/bin/process-firehol-website www
-	https://github.com/philwhineray/firehol-website.git test /home/firehol/bin/process-firehol-website test
+	https://github.com/firehol/firehol.git tag /home/firehol/bin/process-firehol-tgz
+	https://github.com/firehol/firehol.git master /home/firehol/bin/process-firehol-tgz master
+	https://github.com/firehol/firehol.git stable-v2 /home/firehol/bin/process-firehol-tgz
+	https://github.com/firehol/website.git master /home/firehol/bin/process-firehol-website www
+	https://github.com/firehol/website.git test /home/firehol/bin/process-firehol-website test
 	END
 
 

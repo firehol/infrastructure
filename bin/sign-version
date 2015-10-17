@@ -20,7 +20,7 @@ fi
 
 cd $tmpdir
 
-git clone --single-branch --branch v"$1" "https://github.com/ktsaou/firehol.git" firehol
+git clone --single-branch --branch v"$1" "https://github.com/firehol/firehol.git" firehol
 
 cd firehol
 git tag -v v"$1"
