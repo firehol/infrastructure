@@ -99,6 +99,8 @@ then
   else
     v="$tag-`date +%Y-%m-%d`"
   fi
+else
+  sed -i -e "/^AC_INIT/s/\[\]VERSION_SUFFIX//" configure.ac
 fi
 fakeroot ./autogen.sh
 fakeroot ./configure

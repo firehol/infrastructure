@@ -1,0 +1,75 @@
+#!/bin/sh
+
+set -e
+ 
+dir=`pwd`
+
+tmpdir=`mktemp -d`
+trap on_exit EXIT
+on_exit() {
+  cd $HOME
+  rm -rf $tmpdir
+  return 0
+}
+
+if [ $# -ne 2 ]
+then
+  echo "Usage: sign-version tag signer"
+  exit 1
+fi
+
+cd $tmpdir
+
+git clone --single-branch --branch v"$1" "https://github.com/firehol/iprange" iprange
+
+cd iprange
+git tag -v v"$1"
+
+sed -i -e '/GIT_REF=/d' sbin/*.in
+
+baseurl=http://firehol.org/download/iprange/unsigned
+for ext in gz bz2 xz
+do
+  wget -q $baseurl/v"$1"/iprange-"$1".tar.$ext
+  wget -q $baseurl/v"$1"/iprange-"$1".tar.$ext.md5
+  wget -q $baseurl/v"$1"/iprange-"$1".tar.$ext.sha
+  md5sum -c firehol-"$1".tar.$ext.md5
+  sha512sum -c firehol-"$1".tar.$ext.sha
+  if [ "$ext" = "xz" ]
+  then
+    opts="xfJ"
+  elif [ "$ext" = "bz2" ]
+  then
+    opts="xfj"
+  elif [ "$ext" = "gz" ]
+  then
+    opts="xfz"
+  else
+    echo "Unrecognised extension $ext"
+    exit 1
+  fi
+  tar "$opts" iprange-"$1".tar.$ext iprange-"$1"/sbin
+  for i in *.c
+  do
+    if ! cmp $i iprange-"$1"/$i
+    then
+      diff $i iprange-"$1"/$i
+      error=Y
+    fi
+  done
+  rm -rf firehol-"$1"
+done
+
+if [ "$error" ]
+then
+  exit 1
+fi
+
+for ext in gz bz2 xz
+do
+  echo "Signing iprange-$1.tar.$ext"
+  gpg --local-user "$2" --armor --detach-sign iprange-"$1".tar.$ext
+done
+
+cd $dir
+mv $tmpdir/iprange/*.asc .

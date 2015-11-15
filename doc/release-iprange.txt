@@ -1,5 +1,5 @@
-                           Release Process
-                           ***************
+                           iprange Release Process
+                           ***********************
 
 Pre-release
 ===========
@@ -7,29 +7,29 @@ Ensure everything is checked in that should be:
   git status
 
 Perform a dry-run of the build:
-  cd firehol
-  ./packaging/git-build
+  cd iprange
+  git clean -dxf
+  ./autogen.sh
+  ./configure
+  make dist
 
 Run any further tests.
-
-Ensure all files are listed in EXTRA_DIST in Makefile.am files as needed:
-  ./packaging/check-contents . firehol-development.tar.gz | less
 
 
 Release
 =======
-To release a new version of FireHOL, commit a change with up to date
-ChangeLog and NEWS (they will be checked before the tag is built).
+To release a new version of iprange, commit a change with up to date
+configure.ac
 
 Tag the commit with a signature:
-  git tag -s v2.x.y -m "Release version 2.x.y"
+  git tag -s v1.x.y -m "Release version 1.x.y"
 
-N.B. pre-release tags should be of the form v2.x.y-pre.z or v2.x.y-rc.z
+N.B. pre-release tags should be of the form v1.x.y-pre.z or v1.x.y-rc.z
 in order to comply with http://semver.org/ without limiting the number
 of such releases.
 
 Push the tag (origin is the default name of the remote repository):
-  git push origin tag v2.x.y
+  git push origin tag v1.x.y
 
 The github hooks will automatically start the build process and
 create a released tar-file.
@@ -37,27 +37,27 @@ create a released tar-file.
 If there is an error in the tag it is possible to move to a new commit,
 delete the old tag locally, re-create it and push it over the old one:
   ....
-  git tag -d v2.x.y
-  git tag -s v2.x.y
-  git push origin tag v2.x.y
+  git tag -d v1.x.y
+  git tag -s v1.x.y
+  git push origin tag v1.x.y
 
 If for some reason the tag needs removing entirely, it can be deleted
 locally, from the remote server, and from the mirror:
-  git tag -d v2.x.y
-  git push origin :refs/tags/v2.x.y
+  git tag -d v1.x.y
+  git push origin :refs/tags/v1.x.y
   ssh firehol.org
   sudo -i -u firehol
-  git --git-dir mirrors/firehol.git tag -d v2.x.y
+  git --git-dir mirrors/iprange.git tag -d v1.x.y
 
 
 Signing the results
 ====================
 The outputs go to:
-  http://firehol.org/download/unsigned/v2.x.y
+  http://firehol.org/download/iprange/unsigned/v1.x.y
 
-Run the sign-version script, with no v on the version and with an
+Run the sign-iprange script, with no v on the version and with an
 identifier for your GPG key e.g.:
-  sign-version 2.x.y sanewall
+  sign-iprange 1.x.y sanewall
 
 This will check the signature in git, grab the bz2, gz and xz files
 and compare the main scripts in sbin/ to ensure the contents all match.
@@ -70,9 +70,9 @@ Finally
 Upload the signatures to the host and move the directory to release:
   scp *.asc firehol.org:.
   ssh firehol.org
-  d=/home/web/firehol/download
-  v=2.x.y
-  sudo -u firehol cp firehol-$v.*.asc $d/unsigned/v$v/
+  d=/home/web/firehol/download/iprange
+  v=1.x.y
+  sudo -u firehol cp iprange-$v.*.asc $d/unsigned/v$v/
   sudo -u firehol mv $d/unsigned/v$v/ $d/releases/
 
 If this is to be made the latest stable release:

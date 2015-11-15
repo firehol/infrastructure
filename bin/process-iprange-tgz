@@ -27,8 +27,8 @@ shift
 email="$1"
 shift
 
-dl=/home/web/iprange/download
-tmp=/home/web/iprange/tmp
+dl=/home/web/firehol/download/iprange
+tmp=/home/web/firehol/tmp/iprange
 
 if [ "$target" = "" ]
 then
