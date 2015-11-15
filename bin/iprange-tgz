@@ -13,7 +13,7 @@ on_exit() {
 
 if [ $# -ne 4 ]
 then
-  echo "Usage: firehol-tgz logfile url outdir tag|branch"
+  echo "Usage: iprange-tgz logfile url outdir tag|branch"
   exit 1
 fi
 
@@ -79,16 +79,16 @@ else
   fi
 fi
 
-echo "Recent history for firehol $version"
+echo "Recent history for iprange $version"
 git --git-dir="$repo" log --oneline -n 5
 
-echo "Preparing an archive of firehol $version"
-git --git-dir="$repo" archive --format=tar.gz --prefix=firehol/ $tag > $tmpdir/package/firehol-src.tar.gz
+echo "Preparing an archive of iprange $version"
+git --git-dir="$repo" archive --format=tar.gz --prefix=iprange/ $tag > $tmpdir/package/iprange-src.tar.gz
 
 mkdir -p $tmpdir/build
 cd $tmpdir/build
-tar xfz ../package/firehol-src.tar.gz
-cd firehol
+tar xfz ../package/iprange-src.tar.gz
+cd iprange
 
 if [ "$branch" ]
 then
@@ -99,16 +99,9 @@ then
   else
     v="$tag-`date +%Y-%m-%d`"
   fi
-  mv NEWS NEWS.orig
-  echo "Automatic build: $v" > NEWS
-  echo "" >> NEWS
-  cat NEWS.orig >> NEWS
-  rm -f NEWS.orig
-  sed -i -e "s/^AC_INIT(\[firehol\],\[[0-9][^,]*,/AC_INIT([firehol],[$v],/" configure.ac
-  sed -i -e "s/^FIREHOL_SCRIPT_VERSION=[0-9].*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
 fi
 fakeroot ./autogen.sh
-fakeroot ./configure --enable-maintainer-mode --without-autosave --without-autosave6
+fakeroot ./configure
 fakeroot make dist
 
 mkdir -p $tmpdir/dist
@@ -122,29 +115,5 @@ do
 done
 
 mv $tmpdir/dist/* $outdir/.
-cp $tmpdir/build/firehol/README $outdir/README.txt
-cp $tmpdir/build/firehol/ChangeLog $outdir/ChangeLog.txt
-cp $tmpdir/build/firehol/doc/*.css $outdir/.
-
-# Put the chunked HTML in a separate directory if it has been built
-if [ -f $tmpdir/build/firehol/doc/html/index.html ]
-then
-  mkdir $outdir/html
-  cp $tmpdir/build/firehol/doc/html/*.html $outdir/html/.
-  cp $tmpdir/build/firehol/doc/html/*.css $outdir/html/.
-  rm -rf $tmpdir/build/firehol/doc/html
-fi
-
-# Copy the single manual or separates, depending on which is there
-if [ -f $tmpdir/build/firehol/doc/firehol-manual.pdf ]
-then
-  cp $tmpdir/build/firehol/doc/firehol-*.html $outdir/.
-  cp $tmpdir/build/firehol/doc/firehol-manual.pdf $outdir/.
-else
-  cp $tmpdir/build/firehol/doc/*/*.html $outdir/.
-  cp $tmpdir/build/firehol/doc/*/*.pdf $outdir/.
-fi
-
-cd $packdir
 
 echo "Archive creation successful"

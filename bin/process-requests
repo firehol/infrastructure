@@ -19,8 +19,6 @@ on_exit() {
   return 0
 }
 
-dl=/home/web/firehol/download
-
 # Just in case we forgot
 chmod 777 $HOME/web/requests
 

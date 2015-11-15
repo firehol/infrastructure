@@ -22,6 +22,8 @@ cat - > /etc/firehol-build.conf <<- END
 	https://github.com/firehol/firehol.git stable-v2 /home/firehol/bin/process-firehol-tgz
 	https://github.com/firehol/website.git master /home/firehol/bin/process-firehol-website www
 	https://github.com/firehol/website.git test /home/firehol/bin/process-firehol-website test
+	https://github.com/firehol/iprange.git tag /home/firehol/bin/process-iprange-tgz
+	https://github.com/firehol/iprange.git master /home/firehol/bin/process-iprange-tgz
 	END
 
 
