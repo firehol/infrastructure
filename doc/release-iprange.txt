@@ -57,7 +57,7 @@ The outputs go to:
 
 Run the sign-iprange script, with no v on the version and with an
 identifier for your GPG key e.g.:
-  sign-iprange 1.x.y sanewall
+  sign-iprange 1.x.y firehol
 
 This will check the signature in git, grab the bz2, gz and xz files
 and compare the main scripts in sbin/ to ensure the contents all match.

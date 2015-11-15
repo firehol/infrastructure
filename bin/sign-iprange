@@ -25,16 +25,15 @@ git clone --single-branch --branch v"$1" "https://github.com/firehol/iprange" ip
 cd iprange
 git tag -v v"$1"
 
-sed -i -e '/GIT_REF=/d' sbin/*.in
-
 baseurl=http://firehol.org/download/iprange/unsigned
-for ext in gz bz2 xz
+# xz
+for ext in gz bz2
 do
   wget -q $baseurl/v"$1"/iprange-"$1".tar.$ext
   wget -q $baseurl/v"$1"/iprange-"$1".tar.$ext.md5
   wget -q $baseurl/v"$1"/iprange-"$1".tar.$ext.sha
-  md5sum -c firehol-"$1".tar.$ext.md5
-  sha512sum -c firehol-"$1".tar.$ext.sha
+  md5sum -c iprange-"$1".tar.$ext.md5
+  sha512sum -c iprange-"$1".tar.$ext.sha
   if [ "$ext" = "xz" ]
   then
     opts="xfJ"
@@ -48,7 +47,7 @@ do
     echo "Unrecognised extension $ext"
     exit 1
   fi
-  tar "$opts" iprange-"$1".tar.$ext iprange-"$1"/sbin
+  tar "$opts" iprange-"$1".tar.$ext iprange-"$1"
   for i in *.c
   do
     if ! cmp $i iprange-"$1"/$i
@@ -57,7 +56,7 @@ do
       error=Y
     fi
   done
-  rm -rf firehol-"$1"
+  rm -rf iprange-"$1"
 done
 
 if [ "$error" ]
@@ -65,7 +64,8 @@ then
   exit 1
 fi
 
-for ext in gz bz2 xz
+# xz
+for ext in gz bz2
 do
   echo "Signing iprange-$1.tar.$ext"
   gpg --local-user "$2" --armor --detach-sign iprange-"$1".tar.$ext
