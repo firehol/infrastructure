@@ -30,6 +30,8 @@ shift
 dl=/home/web/firehol/download/iprange
 tmp=/home/web/firehol/tmp/iprange
 
+mkdir -p $tmp
+
 if [ "$target" = "" ]
 then
   target="$ref"

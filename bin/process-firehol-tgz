@@ -27,8 +27,10 @@ shift
 email="$1"
 shift
 
-dl=/home/web/firehol/download
-tmp=/home/web/firehol/tmp
+dl=/home/web/firehol/download/firehol
+tmp=/home/web/firehol/tmp/firehol
+
+mkdir -p $tmp
 
 if [ "$target" = "" ]
 then

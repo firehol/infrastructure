@@ -62,20 +62,20 @@ Login:
   ssh firehol.org
 
 Choose suitable release directory:
-  d=/home/web/firehol/download/
+  d=/home/web/firehol/download/firehol
 or:
   d=/home/web/firehol/download/iprange
 
-Release the files:
+Release the files (your user must belong to group 'firehol'):
   v=x.y.z
-  sudo -u firehol cp *-$v.*.asc $d/unsigned/v$v/
-  sudo -u firehol mv $d/unsigned/v$v/ $d/releases/
+  cp *-$v.*.asc $d/unsigned/v$v/
+  mv $d/unsigned/v$v/ $d/releases/
 
 If this is to be made the latest stable release:
-  sudo -u firehol rm $d/latest
-  sudo -u firehol ln -s $d/releases/v$v $d/latest
+  rm $d/latest
+  ln -s $d/releases/v$v $d/latest
 
-Announce on the mailing lists and website
+Announce on the mailing lists (doc/announce.template) and website.
 
 If it all goes wrong
 ====================
