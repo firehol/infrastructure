@@ -27,7 +27,7 @@ git tag -v v"$1"
 
 sed -i -e '/GIT_REF=/d' sbin/*.in
 
-baseurl=http://firehol.org/download/unsigned
+baseurl=http://firehol.org/download/firehol/unsigned
 for ext in gz bz2 xz
 do
   wget -q $baseurl/v"$1"/firehol-"$1".tar.$ext
@@ -74,3 +74,24 @@ done
 
 cd $dir
 mv $tmpdir/firehol/*.asc .
+
+prerel=false
+case "$1" in
+  *-*)
+    prerel=true
+  ;;
+esac
+
+cat > "firehol-$1.json" <<!
+{
+  "tag_name": "v$1",
+  "name": "v$1",
+  "body": "firehol $1 - download release tarfiles from http://firehol.org/downloads/firehol/releases/v$1",
+  "draft": false,
+  "prerelease": $prerel
+}
+!
+
+url=https://github.com/repos/firehol/firehol/releases
+echo "Once the release is complete, create a github release with:"
+echo "  curl -i -u username -H 'X-GitHub-OTP: 000000' url -d '@firehol-$1.json' $url"
