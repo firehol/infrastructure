@@ -84,12 +84,12 @@ cat > "iprange-$1.json" <<!
 {
   "tag_name": "v$1",
   "name": "v$1",
-  "body": "iprange $1 - download release tarfiles from http://firehol.org/downloads/iprange/releases/v$1",
+  "body": "iprange $1 - download release tarfiles from http://firehol.org/download/iprange/releases/v$1",
   "draft": false,
   "prerelease": $prerel
 }
 !
 
-url=https://github.com/repos/firehol/iprange/releases
+url=https://api.github.com/repos/firehol/iprange/releases
 echo "Once the release is complete, create a github release with:"
-echo "  curl -i -u username -H 'X-GitHub-OTP: 000000' url -d '@iprange-$1.json' $url"
+echo "  curl -i -u username -H 'X-GitHub-OTP: 000000' -d '@iprange-$1.json' $url"

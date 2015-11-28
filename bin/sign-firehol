@@ -86,12 +86,12 @@ cat > "firehol-$1.json" <<!
 {
   "tag_name": "v$1",
   "name": "v$1",
-  "body": "firehol $1 - download release tarfiles from http://firehol.org/downloads/firehol/releases/v$1",
+  "body": "firehol $1 - download release tarfiles from http://firehol.org/download/firehol/releases/v$1",
   "draft": false,
   "prerelease": $prerel
 }
 !
 
-url=https://github.com/repos/firehol/firehol/releases
+url=https://api.github.com/repos/firehol/firehol/releases
 echo "Once the release is complete, create a github release with:"
-echo "  curl -i -u username -H 'X-GitHub-OTP: 000000' url -d '@firehol-$1.json' $url"
+echo "  curl -i -u username -H 'X-GitHub-OTP: 000000' -d '@firehol-$1.json' $url"

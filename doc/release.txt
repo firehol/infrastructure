@@ -70,10 +70,17 @@ Release the files (your user must belong to group 'firehol'):
   v=x.y.z
   cp *-$v.*.asc $d/unsigned/v$v/
   mv $d/unsigned/v$v/ $d/releases/
+  rm *.asc
 
 If this is to be made the latest stable release:
   rm $d/latest
   ln -s $d/releases/v$v $d/latest
+
+On the machine that did the signing, create a github release with:
+  curl -i -u username -H 'X-GitHub-OTP: 000000' -d '@[project]-x.y.z.json' https://api.github.com/repos/firehol/[project]/releases
+
+If you do not have two-factor authentication the X-GitHub-OTP header
+should not be needed.
 
 Announce on the mailing lists (doc/announce.template) and website.
 
