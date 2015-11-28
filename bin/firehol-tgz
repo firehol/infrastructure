@@ -87,6 +87,16 @@ git --git-dir="$repo" archive --format=tar.gz --prefix=firehol/ $tag > $tmpdir/p
 
 mkdir -p $tmpdir/build
 cd $tmpdir/build
+
+mkdir fake-iprange
+cat - > fake-iprange/iprange <<-EOF
+	#!/bin/sh
+	echo 999.999.999
+	exit 0
+	EOF
+chmod +x fake-iprange/iprange
+PATH=$PATH:$build/tmp/build/fake-iprange
+
 tar xfz ../package/firehol-src.tar.gz
 cd firehol
 
@@ -99,13 +109,16 @@ then
   else
     v="$tag-`date +%Y-%m-%d`"
   fi
-  mv NEWS NEWS.orig
-  echo "Automatic build: $v" > NEWS
-  echo "" >> NEWS
-  cat NEWS.orig >> NEWS
-  rm -f NEWS.orig
-  sed -i -e "s/^AC_INIT(\[firehol\],\[[0-9][^,]*,/AC_INIT([firehol],[$v],/" configure.ac
-  sed -i -e "s/^FIREHOL_SCRIPT_VERSION=[0-9].*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
+  if [ -f NEWS ]
+  then
+    mv NEWS NEWS.orig
+    echo "Automatic build: $v" > NEWS
+    echo "" >> NEWS
+    cat NEWS.orig >> NEWS
+    rm -f NEWS.orig
+    sed -i -e "s/^AC_INIT(\[firehol\],\[[0-9][^,]*,/AC_INIT([firehol],[$v],/" configure.ac
+    sed -i -e "s/^FIREHOL_SCRIPT_VERSION=[0-9].*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
+  fi
 fi
 fakeroot ./autogen.sh
 fakeroot ./configure --enable-maintainer-mode --without-autosave --without-autosave6
