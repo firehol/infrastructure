@@ -1,0 +1,89 @@
+                           Common Release Process
+                           **********************
+
+For FireHOL below 3.0, see "release-firehol-v2.txt" or "release-firehol-v1.txt"
+
+Pre-release
+===========
+Ensure the hooks are installed, they will take care of all the checking
+and much of the work.
+
+
+Release
+=======
+You need a gpg key setup to sign with.
+
+Update configure.ac, ChangeLog and any .spec.in files.
+
+  N.B. pre-release tags should be of the form vx.y.z-pre.nn or vx.y.z-rc.nn
+  in order to comply with http://semver.org/ without limiting the number
+  of such releases.
+
+Use "git commit" in the normal way. The hooks will detect a release
+and do the following:
+
+* Test build
+* Prepare a suitable message
+* Ask you to sign a tag
+* Update the configure.ac for continuing development and commit it
+
+If you are satisfied with the results, push the repo and tag as
+instructed. If not roll back as directed in packaging/README.md.
+
+The github hooks will automatically start the build process and
+create a released tar-file.
+
+
+Signing the results
+====================
+The outputs go to e.g:
+  http://firehol.org/download/unsigned/vx.y.z
+ot:
+  http://firehol.org/download/iprange/unsigned/vx.y.z
+
+Run the sign[<product] script, with no v on the version and with an
+identifier for your GPG key e.g.:
+  ./bin/sign-firehol x.y.z firehol
+or:
+  ./bin/sign-iprange x.y.z firehol
+
+This will check the signature in git, grab the bz2, gz and xz files
+and compare the main scripts in sbin/ to ensure the contents all match.
+
+If everything is OK, detached signatures will be created for each file.
+
+
+Finally
+=======
+Upload the signatures to the host and move the directory to release:
+  scp *.asc firehol.org:.
+
+Login:
+  ssh firehol.org
+
+Choose suitable release directory:
+  d=/home/web/firehol/download/
+or:
+  d=/home/web/firehol/download/iprange
+
+Release the files:
+  v=x.y.z
+  sudo -u firehol cp *-$v.*.asc $d/unsigned/v$v/
+  sudo -u firehol mv $d/unsigned/v$v/ $d/releases/
+
+If this is to be made the latest stable release:
+  sudo -u firehol rm $d/latest
+  sudo -u firehol ln -s $d/releases/v$v $d/latest
+
+Announce on the mailing lists and website
+
+If it all goes wrong
+====================
+
+If for some reason a tag needs removing entirely, it can be deleted
+locally, from the remote server, and from the mirror:
+  git tag -d vz.y.z
+  git push origin :refs/tags/vx.y.z
+  ssh firehol.org
+  sudo -i -u firehol
+  git --git-dir mirrors/[product].git tag -d vx.y.z

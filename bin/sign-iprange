@@ -64,8 +64,7 @@ then
   exit 1
 fi
 
-# xz
-for ext in gz bz2
+for ext in gz bz2 xz
 do
   echo "Signing iprange-$1.tar.$ext"
   gpg --local-user "$2" --armor --detach-sign iprange-"$1".tar.$ext

@@ -1,5 +1,7 @@
-                           Release Process
-                           ***************
+                        Release Process - FireHOL v2
+                        ****************************
+
+For FireHOL 3+, see common "release.txt"
 
 Pre-release
 ===========
