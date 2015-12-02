@@ -41,11 +41,19 @@ The outputs go to e.g:
 ot:
   http://firehol.org/download/iprange/unsigned/vx.y.z
 
-Run the sign[<product] script, with no v on the version and with an
-identifier for your GPG key e.g.:
-  ./bin/sign-firehol x.y.z firehol
+Your signing key needs to be in your git configuration ($HOME/.git).
+if not run:
+  git config user.signingkey [SHORTID]
 or:
-  ./bin/sign-iprange x.y.z firehol
+  git config --global user.signingkey [SHORTID]
+
+If you need to locate the identifier, run:
+  gpg --list-keys
+
+Run the sign-package script, with no v on the version:
+  ./bin/sign-package firehol x.y.z
+or:
+  ./bin/sign-package iprange x.y.z
 
 This will check the signature in git, grab the bz2, gz and xz files
 and compare the main scripts in sbin/ to ensure the contents all match.

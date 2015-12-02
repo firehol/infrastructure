@@ -1,0 +1,153 @@
+#!/bin/sh
+
+set -e
+ 
+dir=`pwd`
+
+tmpdir=`mktemp -d`
+trap on_exit EXIT
+on_exit() {
+  cd $HOME
+  rm -rf $tmpdir
+  return 0
+}
+
+if [ "$1" = "--resign" ]
+then
+  shift
+  sign=releases
+else
+  sign=unsigned
+fi
+
+if [ $# -ne 2 ]
+then
+  echo "Usage: sign-version [--resign] package tag"
+  exit 1
+fi
+
+package="$1"
+tag="$2"
+baseurl=http://firehol.org/download/$package/$sign
+
+gpgid="$(git config user.signingkey)"
+if [ "$gpgid" = "" ]
+then
+  echo "You need to set up a PGP signing key e.g.:"
+  echo "   gpg --list-keys"
+  echo "and"
+  echo "   git config user.signingkey SHORTID"
+  echo "or"
+  echo "   git config --global user.signingkey SHORTID"
+  exit 1
+fi
+
+cd $tmpdir
+
+git clone --single-branch --branch v"$tag" "https://github.com/firehol/$package.git" $package-git
+
+cd $package-git
+git tag -v v"$tag"
+cd ..
+
+for i in $(grep -rl "$Id:" $package-git)
+do
+  sed -i -e '/$Id:/d' "$i"
+done
+
+for ext in gz bz2 xz
+do
+  if wget -q $baseurl/v"$tag"/$package-"$tag".tar.$ext
+  then
+    wget -q $baseurl/v"$tag"/$package-"$tag".tar.$ext.md5
+    wget -q $baseurl/v"$tag"/$package-"$tag".tar.$ext.sha
+    md5sum -c $package-"$tag".tar.$ext.md5
+    sha512sum -c $package-"$tag".tar.$ext.sha
+
+    if [ "$ext" = "xz" ]
+    then
+      opts="xfJ"
+    elif [ "$ext" = "bz2" ]
+    then
+      opts="xfj"
+    elif [ "$ext" = "gz" ]
+    then
+      opts="xfz"
+    else
+      echo "Unrecognised extension $ext"
+      exit 1
+    fi
+
+    tar "$opts" $package-"$tag".tar.$ext
+
+    for i in $(grep -rl "$Id:" $package-"$tag")
+    do
+      sed -i -e '/$Id:/d' "$i"
+    done
+
+    find $package-git -type f -print | \
+    while read i
+    do
+      j=`echo $i | sed -e "s/git/$tag/"`
+      if [ -f "$j" ]
+      then
+        touch $tmpdir/donecompare
+        if ! cmp $i $j
+        then
+          diff $i $j || true
+          touch $tmpdir/error
+        fi
+      fi
+    done
+    if [ ! -f $tmpdir/donecompare ]
+    then
+      touch $tmpdir/error
+      echo "No files compared!"
+    fi
+    rm -rf $package-"$tag"
+    echo $package-"$tag".tar.$ext >> $tmpdir/ok
+  else
+    echo Skipping missing $package-"$tag".tar.$ext
+  fi
+done
+
+if [ -f "$tmpdir/error" ]
+then
+  exit 1
+fi
+
+if [ ! -f "$tmpdir/ok" ]
+then
+  echo "Nothing to sign!"
+  exit 1
+fi
+
+while read tar
+do
+  echo "Signing $tar"
+  gpg --local-user "$gpgid" --armor --detach-sign $tar
+done < $tmpdir/ok
+
+cd $dir
+mv $tmpdir/*.asc .
+
+prerel=false
+case "$tag" in
+  *-*)
+    prerel=true
+  ;;
+esac
+
+cat > "$package-$tag.json" <<!
+{
+  "tag_name": "v$tag",
+  "name": "v$tag",
+  "body": "$package $tag - download release tarfiles from http://firehol.org/download/$package/releases/v$tag",
+  "draft": false,
+  "prerelease": $prerel
+}
+!
+
+url=https://api.github.com/repos/firehol/$package/releases
+echo "Once the release is complete, create a github release with:"
+echo "  curl -i -u username -H 'X-GitHub-OTP: 000000' -d '@$package-$tag.json' $url"
