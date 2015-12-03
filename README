@@ -19,13 +19,17 @@ Create the user in the normal way, then as root:
   chown -R firehol:firehol firehol
   find firehol -type d -exec chmod g+s \{\} \;
 
-To update the firehol user's copy of the project:
+The repository will be updated automatically when new requests are processed.
+To manually update:
   sudo -u firehol -i
   git pull
 
 
 Facilities
 ==========
+
+Automation of mirroring and github hook processing relies on cron;
+see doc/cron.txt for setup information.
 
 Release Process
 ---------------
@@ -34,12 +38,10 @@ See doc/release.txt
 Mirroring
 ---------
 Mirrors of other git repositories (in particular the official firehol
-repository) are maintained. See /etc/firehol-mirrors.conf for a list.
+repository) are maintained. See etc/mirrors.conf for a list.
 
 These mirrors are used to perform local git operations by other facilities,
 as well as providing a fallback.
-
-See doc/mirrors.txt for setup information.
 
 
 Key Checking/Signing
@@ -64,6 +66,8 @@ GitHub hooks
 ------------
 Ensure that the web server can create requests to be processed:
   chmod 777 web/requests
+
+Create hook-credentials/firehol.github.secret and any others as needed.
 
 See doc/github-hook.txt for more details.
 

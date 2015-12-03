@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 PATH=$PATH:/usr/local/bin export PATH
 
 #
@@ -12,6 +10,14 @@ PATH=$PATH:/usr/local/bin export PATH
 if [ $# -ne 5 ]
 then
   echo "Usage: process-firehol-tgz logile target repo-url ref email"
+  exit 1
+fi
+
+set -e
+. $HOME/etc/script-config
+if [ ! -f "$config_mirror" ]
+then
+  1>&2 echo "No build configuration file $config_mirror"
   exit 1
 fi
 
@@ -40,12 +46,12 @@ case "$ref" in
 esac
 echo "Deploying $url branch $ref as $target"
 
-awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" /etc/firehol-mirrors.conf > /tmp/repo.$$
+awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" $config_mirror > /tmp/repo.$$
 
 repo=`cat /tmp/repo.$$`
 if [ ! "$repo" -o ! -d "$repo" ]
 then
-  echo "$url is not a mirrored repo - see /etc/firehol-mirrors.conf"
+  echo "$url is not a mirrored repo - see $config_mirror"
   rm -f /tmp/repo.$$
   exit 1
 fi

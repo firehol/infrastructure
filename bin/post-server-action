@@ -1,0 +1,35 @@
+#!/bin/sh
+
+#
+# Use this script to send an action directly to the firehol server,
+# e.g. to retry an action which failed when github called the hook.
+#
+
+action="$1"   # e.g. push
+email="$2"    # e.g. you@yourdomain
+url="$3"      # e.g. https://github.com/firehol/firehol
+ref="$4"      # e.g. refs/tags/v2.0.2 OR refs/heads/master
+username="$5" # as agreed with server admins
+
+if [ "$username" = "" ]
+then
+  echo "Usage: $0 action email repo-url git-ref username"
+  echo ""
+  echo "     action - action to undertake e.g. build"
+  echo "      email - who to email  e.g. you@yourdomain"
+  echo "   repo-url - repository e.g. https://github.com/firehol/firehol"
+  echo "    git-ref - branch/tag e.g. refs/heads/master or refs/tags/v1.2.3"
+  echo "   username - firehol 'secrets' username, as agreed with server admins"
+  exit 1
+fi
+
+echo -n "Enter server secret for $url / $username: "
+stty -echo
+read secret
+stty echo
+echo ""
+
+postdata="action=$action&email=$email&url=$url&ref=$ref&username=$username"
+sig=$(echo -n "$secret$postdata" | sha1sum |  cut -f1 -d' ')
+
+curl -H "X_HUB_SIGNATURE: $sig" https://firehol.org/github-hook.php -d "$postdata"

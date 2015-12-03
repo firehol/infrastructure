@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 #
 # This script is notified by process-requests that new iprange tar-files
 # should be built.
@@ -15,6 +13,9 @@ then
   echo "Usage: process-iprange-tgz logile target repo-url ref email"
   exit 1
 fi
+
+set -e
+. $HOME/etc/script-config
 
 log="$1"
 shift

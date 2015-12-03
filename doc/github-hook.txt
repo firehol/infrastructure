@@ -1,30 +1,41 @@
                            GitHub Hooks
                            ************
 
+Server configuration
+====================
+Only repositories and branches that are listed will in `etc/build.conf`
+be built automatically (since only branches that the scripts understand how
+to build can be used).
+
+Create files in `hook-credentials` called e.g.:
+
+    firehol.github.secret
+
+Where the form is `organisation`.`username`.secret.
+
+The organisation is extracted from the URL
+(https://github.org/organisation/repo).
+
+The username is always `github` when triggered by a GitHub hook, it does
+not relate to the user pushing or owner of the repository.
+
+
 GitHub Configuration
 ====================
 Under the github repository settings, add a webhook URL:
-        http://firehol.org/github-hook.php
 
+    https://firehol.org/github-hook.php
 
-Server configuration
-====================
-Only repositories and branches that are listed will be built automatically
-(since only branches that the scripts understand how to build can be used).
+Set SSL verification on and choose the same secret as will be set in the
+hook-credentials/*.github.secret files.
 
-cat - > /etc/firehol-build.conf <<- END
-	# Format:
-	#   repo branch script-to-run [override-target]
-	# The same repo may be used multiple times to allow multiple branches
-	# The special branch 'tag' applies to any tag
-	https://github.com/firehol/firehol.git tag /home/firehol/bin/process-firehol-tgz
-	https://github.com/firehol/firehol.git master /home/firehol/bin/process-firehol-tgz master
-	https://github.com/firehol/firehol.git stable-v2 /home/firehol/bin/process-firehol-tgz
-	https://github.com/firehol/website.git master /home/firehol/bin/process-firehol-website www
-	https://github.com/firehol/website.git test /home/firehol/bin/process-firehol-website test
-	https://github.com/firehol/iprange.git tag /home/firehol/bin/process-iprange-tgz
-	https://github.com/firehol/iprange.git master /home/firehol/bin/process-iprange-tgz
-	END
+For each repository to be monitored:
+
+* https://github.com/firehol/firehol/settings/hooks
+* https://github.com/firehol/iprange/settings/hooks
+* https://github.com/firehol/infrastructure/settings/hooks
+* https://github.com/firehol/netdata/settings/hooks
+* https://github.com/firehol/website/settings/hooks
 
 
 Nginx Configuration
@@ -39,12 +50,6 @@ Add the following to the nginx server configuration:
 
 The PHP script parses the incoming JSON and creates build instructions
 in web/requests which are acted on by a cron-job.
-
-
-Cron configuration
-==================
-Add the following to the firehol user's crontab:
-  * * * * * /home/firehol/bin/process-requests > /dev/null 2> /dev/null
 
 
 Appendix

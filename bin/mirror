@@ -2,7 +2,12 @@
 
 set -e
 
-conf=/etc/firehol-mirrors.conf
+. $HOME/etc/script-config
+if [ ! -f "$config_mirror" ]
+then
+  1>&2 echo "No mirror configuration file $config_mirror"
+  exit 1
+fi
 
 while read dir repo build
 do
@@ -23,4 +28,4 @@ do
       fi
     ;;
   esac
-done < $conf
+done < "$config_mirror"

@@ -1,6 +1,12 @@
 #!/bin/sh
 
 set -e
+. $HOME/etc/script-config
+if [ ! -f "$config_mirror" ]
+then
+  1>&2 echo "No build configuration file $config_mirror"
+  exit 1
+fi
 
 tmpdir=`mktemp -d`
 mkdir -p $tmpdir/package
@@ -30,12 +36,12 @@ cd "$packdir"
 tag="$1"
 shift
 
-awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" /etc/firehol-mirrors.conf > $tmpdir/repo
+awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" $config_mirror > $tmpdir/repo
 
 repo=`cat $tmpdir/repo`
 if [ ! "$repo" -o ! -d "$repo" ]
 then
-  echo "$url is not a mirrored repo - see /etc/firehol-mirrors.conf"
+  echo "$url is not a mirrored repo - see $config_mirror"
   exit 1
 fi
 

@@ -4,10 +4,21 @@ PATH=$PATH:$HOME/bin export PATH
 
 set -e
 
+. $HOME/etc/script-config
+if [ ! -f "$config_build" ]
+then
+  1>&2 echo "No build configuration file $config_build"
+  exit 1
+fi
+if [ ! "$config_lockdir" ]
+then
+  1>&2 echo "No lock directory defined config_lockdir"
+  exit 1
+fi
+
 # Stop two from running at the same time
-tmp=/home/web/firehol/tmp
-mkdir -p $tmp
-exec 200> $tmp/process-requests.lck
+mkdir -p $config_lockdir
+exec 200> $config_lockdir/process-requests.lck
 flock -n 200 || exit 0
 
 tmpdir=`mktemp -d`
@@ -46,11 +57,11 @@ extract_request() {
 
   case $ref in
       refs/tags/*)
-        grep "^$url.git *tag" /etc/firehol-build.conf > $tmpdir/ref || return 0
+        grep "^$url.git *tag" "$config_build" > $tmpdir/ref || return 0
       ;;
 
       refs/heads/*)
-        grep "^$url.git *$tag" /etc/firehol-build.conf > $tmpdir/ref || return 0
+        grep "^$url.git *$tag" "$config_build" > $tmpdir/ref || return 0
       ;;
 
       *)
