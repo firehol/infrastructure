@@ -9,22 +9,9 @@ Under the github repository settings, add a webhook URL:
 
 Server configuration
 ====================
-Only repositories and branches that are listed will be built automatically
-(since only branches that the scripts understand how to build can be used).
-
-cat - > /etc/firehol-build.conf <<- END
-	# Format:
-	#   repo branch script-to-run [override-target]
-	# The same repo may be used multiple times to allow multiple branches
-	# The special branch 'tag' applies to any tag
-	https://github.com/firehol/firehol.git tag /home/firehol/bin/process-firehol-tgz
-	https://github.com/firehol/firehol.git master /home/firehol/bin/process-firehol-tgz master
-	https://github.com/firehol/firehol.git stable-v2 /home/firehol/bin/process-firehol-tgz
-	https://github.com/firehol/website.git master /home/firehol/bin/process-firehol-website www
-	https://github.com/firehol/website.git test /home/firehol/bin/process-firehol-website test
-	https://github.com/firehol/iprange.git tag /home/firehol/bin/process-iprange-tgz
-	https://github.com/firehol/iprange.git master /home/firehol/bin/process-iprange-tgz
-	END
+Only repositories and branches that are listed will in `etc/build.conf`
+be built automatically (since only branches that the scripts understand how
+to build can be used).
 
 
 Nginx Configuration
@@ -44,7 +31,10 @@ in web/requests which are acted on by a cron-job.
 Cron configuration
 ==================
 Add the following to the firehol user's crontab:
-  * * * * * /home/firehol/bin/process-requests > /dev/null 2> /dev/null
+
+~~~~
+* * * * * $HOME/bin/process-requests etc/build.conf > /dev/null 2> /dev/null
+~~~~
 
 
 Appendix

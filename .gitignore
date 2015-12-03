@@ -4,3 +4,5 @@ mirrors/
 .gnupg
 .selected_editor
 web/requests/
+*.json
+*.asc

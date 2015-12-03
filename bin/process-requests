@@ -3,6 +3,12 @@
 PATH=$PATH:$HOME/bin export PATH
 
 set -e
+conf="$1"
+if [ ! -f "$conf" ]
+then
+  1>&2 echo "No configuration file $f"
+  exit 1
+fi
 
 # Stop two from running at the same time
 tmp=/home/web/firehol/tmp
@@ -46,11 +52,11 @@ extract_request() {
 
   case $ref in
       refs/tags/*)
-        grep "^$url.git *tag" /etc/firehol-build.conf > $tmpdir/ref || return 0
+        grep "^$url.git *tag" "$conf" > $tmpdir/ref || return 0
       ;;
 
       refs/heads/*)
-        grep "^$url.git *$tag" /etc/firehol-build.conf > $tmpdir/ref || return 0
+        grep "^$url.git *$tag" "$conf" > $tmpdir/ref || return 0
       ;;
 
       *)
