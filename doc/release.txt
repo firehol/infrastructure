@@ -13,7 +13,8 @@ Release
 =======
 You need a gpg key setup to sign with.
 
-Update configure.ac, ChangeLog and any .spec.in files.
+Update configure.ac to remove the version suffix or set it to -rc.nn,
+update the ChangeLog and any .spec.in files.
 
   N.B. pre-release tags should be of the form vx.y.z-pre.nn or vx.y.z-rc.nn
   in order to comply with http://semver.org/ without limiting the number
@@ -27,11 +28,18 @@ and do the following:
 * Ask you to sign a tag
 * Update the configure.ac for continuing development and commit it
 
-If you are satisfied with the results, push the repo and tag as
-instructed. If not roll back as directed in packaging/README.md.
+If not satisfied, roll back as directed in packaging/README.md.
+
+Otherwiser, if you are satisfied with the results, push the repo and
+tag as instructed, something like:
+
+~~~~
+git push origin
+git push origin tag va.b.c-rc.d
+~~~~
 
 The github hooks will automatically start the build process and
-create a released tar-file.
+create a release tar-file.
 
 
 Signing the results

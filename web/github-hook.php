@@ -124,6 +124,7 @@ if (file_exists("$creddir/$organisation.$given_user.secret")) {
   exit(1);
 }
 
+$input_sig = preg_replace('/^sha1=/', '', $input_sig);
 $sig = sha1("$secret$body");
 if ($sig != $input_sig) {
   print "ERROR: invalid credentials\n";
