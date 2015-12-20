@@ -124,12 +124,18 @@ if (file_exists("$creddir/$organisation.$given_user.secret")) {
   exit(1);
 }
 
-$input_sig = preg_replace('/^sha1=/', '', $input_sig);
-$sig = sha1("$secret$body");
+$arr = explode('=', $input_sig, 2);
+if (count($arr) == 1) {
+  $sig = sha1("$secret$body");
+} else {
+  $sig = hash_hmac($arr[0], $body, $secret);
+  $input_sig = $arr[1];
+}
+
 if ($sig != $input_sig) {
   print "ERROR: invalid credentials\n";
   error_log("ERROR: signature mismatch");
-  error_log("given $input_sig but expected $sig");
+  error_log("given $input_sig but expected $sig for $organisation.$given_user");
   exit(1);
 }
 
