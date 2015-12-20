@@ -41,7 +41,7 @@ extract_request() {
   url=`sed -ne 's/^URL: //p' $f`
   ref=`sed -ne 's/^Ref: //p' $f`
   tag=`sed -ne 's/^Ref: .*[^/]\/\(.*\)/\1/p' $f`
-  email=`sed -ne 's/^Email: //p' $f`
+  email=`sed -ne 's/^Email: //p' $f | sed -e 's/ //g'`
   action=`sed -ne 's/^Action: //p' $f`
 
   case $action in
@@ -97,6 +97,8 @@ do
     fi
   fi
 done
+
+# cat $tmpdir/requests > /tmp/debug
 
 set +e
 while read url ref email script target
