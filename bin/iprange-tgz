@@ -107,7 +107,7 @@ then
   fi
 fi
 fakeroot ./autogen.sh
-fakeroot ./configure
+fakeroot ./configure --enable-maintainer-mode
 fakeroot make dist
 
 mkdir -p $tmpdir/dist
