@@ -106,6 +106,7 @@ then
     v="$tag-`date +%Y-%m-%d`"
   fi
 fi
+export MAKEDIST_BUILD_ONLY=yes
 fakeroot ./autogen.sh
 fakeroot ./configure --enable-maintainer-mode
 fakeroot make dist

@@ -126,6 +126,7 @@ then
     sed -i -e "s/^FIREHOL_SCRIPT_VERSION=[0-9].*/FIREHOL_SCRIPT_VERSION=$v/" sbin/firehol.in
   fi
 fi
+export MAKEDIST_BUILD_ONLY=yes
 fakeroot ./autogen.sh
 fakeroot ./configure --enable-maintainer-mode --without-autosave --without-autosave6
 fakeroot make dist
