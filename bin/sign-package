@@ -85,9 +85,15 @@ do
       sed -i -e '/$Id:/d' "$i"
     done
 
+    for i in $(grep -rl "GIT_REF=" $package-"$tag")
+    do
+      sed -i -e '/GIT_REF=/d' "$i"
+    done
+
     find $package-git -type f -print | \
     while read i
     do
+      sed -i -e '/GIT_REF=/d' "$i"
       j=`echo $i | sed -e "s/git/$tag/"`
       if [ -f "$j" ]
       then

@@ -59,7 +59,7 @@ The outputs go to:
 
 Run the sign-firehol script, with no v on the version and with an
 identifier for your GPG key e.g.:
-  sign-firehol 2.x.y firehol
+  sign-package firehol 2.x.y
 
 This will check the signature in git, grab the bz2, gz and xz files
 and compare the main scripts in sbin/ to ensure the contents all match.
@@ -72,13 +72,13 @@ Finally
 Upload the signatures to the host and move the directory to release:
   scp *.asc firehol.org:.
   ssh firehol.org
-  d=/home/web/firehol/download
+  d=/home/web/firehol/download/firehol
   v=2.x.y
-  sudo -u firehol cp firehol-$v.*.asc $d/unsigned/v$v/
-  sudo -u firehol mv $d/unsigned/v$v/ $d/releases/
+  cp firehol-$v.*.asc $d/unsigned/v$v/
+  mv $d/unsigned/v$v/ $d/releases/
 
 If this is to be made the latest stable release:
-  sudo -u firehol rm $d/latest
-  sudo -u firehol ln -s $d/releases/v$v $d/latest
+  rm $d/latest
+  ln -s $d/releases/v$v $d/latest
 
 Announce on the mailing lists and website
