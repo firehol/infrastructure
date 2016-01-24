@@ -26,8 +26,14 @@ Under the github repository settings, add a webhook URL:
 
     https://firehol.org/github-hook.php
 
-Set SSL verification on and choose the same secret as will be set in the
-hook-credentials/*.github.secret files.
+Set the content type to `application/x-www-form-urlencoded`.
+
+Set SSL verification on.
+
+Set the secret the same as will be in the `hook-credentials/*.github.secret`
+files.
+
+Just push events are needed.
 
 For each repository to be monitored:
 
