@@ -1,0 +1,126 @@
+#!/bin/sh
+
+set -e
+. $HOME/etc/script-config
+if [ ! -f "$config_mirror" ]
+then
+  1>&2 echo "No build configuration file $config_mirror"
+  exit 1
+fi
+
+tmpdir=`mktemp -d`
+mkdir -p $tmpdir/package
+trap on_exit EXIT
+on_exit() {
+  cd $HOME
+  rm -rf $tmpdir
+  return 0
+}
+
+if [ $# -ne 4 ]
+then
+  echo "Usage: netdata-tgz logfile url outdir tag|branch"
+  exit 1
+fi
+
+logfile="$1"
+shift
+
+url="$1"
+shift
+packdir=`pwd`
+cd "$1"
+shift
+outdir=`pwd`
+cd "$packdir"
+tag="$1"
+shift
+
+awk "\$2 == \"$url\" || \$2 == \"$url.git\" {print \$1}" $config_mirror > $tmpdir/repo
+
+repo=`cat $tmpdir/repo`
+if [ ! "$repo" -o ! -d "$repo" ]
+then
+  echo "$url is not a mirrored repo - see $config_mirror"
+  exit 1
+fi
+
+exec > $logfile
+exec 2>&1
+
+echo "Bringing mirrors up to date..."
+mirror || exit
+
+branch=""
+if git --git-dir="$repo" show-ref --verify --quiet refs/heads/$tag
+then
+  branch="Y"
+  version="$tag"
+  echo "Building from branch $tag (no signature check)"
+else
+  version=`echo $tag | sed -e 's/^v//'`
+  echo "Building from tag $tag"
+  set +e
+  git --git-dir=$repo tag -v $tag > $tmpdir/tag.info 2>&1
+  set -e
+
+  if grep "^error: " $tmpdir/tag.info
+  then
+    echo "Has the source been tagged with a signature and pushed? e.g.:"
+    echo "  git tag -s v2.x.y"
+    echo "  git push origin v2.x.y"
+    echo ""
+    echo "To remove a bad tag, delete it locally, remotely and on mirror:"
+    echo "  git tag -d v2.x.y"
+    echo "  git push origin :refs/tags/v2.x.y"
+    echo "  git --git-dir $repo tag -d v2.x.y"
+    exit 1
+  fi
+
+  if ! grep -q "gpg: Good signature" $tmpdir/tag.info
+  then
+    echo "Cannot use tag $version for release - no good signature found"
+    cat $tmpdir/tag.info
+    exit 1
+  fi
+fi
+
+echo "Recent history for netdata $version"
+git --git-dir="$repo" log --oneline -n 5
+
+echo "Preparing an archive of netdata $version"
+git --git-dir="$repo" archive --format=tar.gz --prefix=netdata/ $tag > $tmpdir/package/netdata-src.tar.gz
+
+mkdir -p $tmpdir/build
+cd $tmpdir/build
+tar xfz ../package/netdata-src.tar.gz
+cd netdata
+
+if [ "$branch" ]
+then
+  if [ -x ./packaging/packver ]
+  then
+    sed -i -e "s/commit-/$tag-/" ./packaging/packver
+    v="`./packaging/packver`"
+  else
+    v="$tag-`date +%Y-%m-%d`"
+  fi
+fi
+export MAKEDIST_BUILD_ONLY=yes
+fakeroot ./autogen.sh
+fakeroot ./configure --enable-maintainer-mode
+fakeroot make dist
+
+mkdir -p $tmpdir/dist
+mv *.tar.* $tmpdir/dist
+
+cd $tmpdir/dist
+for i in *.tar.*
+do
+  md5sum -b $i > $i.md5
+  sha512sum -b $i > $i.sha
+done
+
+mv $tmpdir/dist/* $outdir/.
+
+echo "Archive creation successful"
