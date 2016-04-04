@@ -88,13 +88,13 @@ fi
 echo "Recent history for netdata $version"
 git --git-dir="$repo" log --oneline -n 5
 
-echo "Preparing an archive of netdata $version"
-git --git-dir="$repo" archive --format=tar.gz --prefix=netdata/ $tag > $tmpdir/package/netdata-src.tar.gz
+echo "Preparing a checkout of netdata $version"
 
 mkdir -p $tmpdir/build
 cd $tmpdir/build
-tar xfz ../package/netdata-src.tar.gz
+git clone --quiet --local --shared --no-checkout "$repo" netdata
 cd netdata
+git checkout -q $tag
 
 if [ "$branch" ]
 then
