@@ -1,0 +1,4 @@
+# Use staging to test
+CA="https://acme-staging.api.letsencrypt.org/directory"
+WELLKNOWN=/usr/local/letsencrypt/challenge
+DOMAINS_TXT=/usr/local/letsencrypt/domains.txt

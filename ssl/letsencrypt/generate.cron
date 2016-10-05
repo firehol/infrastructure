@@ -1,0 +1,31 @@
+#!/bin/sh
+
+BASE=/usr/local/letsencrypt
+
+cd $BASE || exit 1
+
+. ./config
+
+$BASE/dehydrated/dehydrated -c -o certs -f $BASE/config
+
+while read main others
+do
+  if test -f "$BASE/certs/$main/cert.pem"
+  then
+    if ! shasum -c "$BASE/certs/$main.sha" > /dev/null 2>&1
+    then
+      if ! test -x $BASE/update-script/$main.sh
+      then
+        echo Missing or not executable: $BASE/update-script/$main.sh
+      elif $BASE/update-script/$main.sh
+      then
+        echo $main updated
+        shasum "$BASE/certs/$main/cert.pem" > "$BASE/certs/$main.sha"
+      else
+        echo $main update failed
+      fi
+    fi
+  else
+    echo "$main - missing cert!"
+  fi
+done < $DOMAINS_TXT

@@ -1,24 +1,16 @@
-Key:
+Lets Encrypt
 
-openssl genrsa -out firehol.key.pem -aes256 2048
+cp -rp letsencrypt /usr/local/letsencrypt
+mkdir -p /usr/local/letsencrypt/challenge
+mkdir -p /usr/local/letsencrypt/certs
+git clone https://github.com/lukas2511/dehydrated.git /usr/local/letsencrypt/dehydrated
 
-CSR:
+crontab:
+10 6 * * 0 root /usr/local/letsencrypt/generate.cron 2>&1
 
-./mkcsr.sh firehol.key.pem > firehol.csr
-openssl req -in firehol.csr -text | less
+Test:
 
-Install:
-
-mkdir -p /home/web/firehol/ssl/
-cat firehol.crt.pem sub.class2.server.ca.pem > /home/web/firehol/ssl/nginx.crt
-openssl rsa -in firehol.key.pem -out /home/web/firehol/ssl/nginx.key
-sudo chgrp web /home/web/firehol/ssl/nginx.key
-sudo chmod 640 /home/web/firehol/ssl/nginx.key
-
-Testing:
-
-openssl x509 -in firehol.crt.pem -text
-cd /home/web/firehol/ssl
-openssl s_server -cert nginx.crt -key nginx.key
-openssl s_client -CAfile sub.class2.server.ca.pem -connect firehol.org:4433
+openssl s_client -connect firehol.org:443
+openssl s_client -connect www.firehol.org:443
+openssl s_client -connect test.firehol.org:443
 openssl s_client -connect lists.firehol.org:443
