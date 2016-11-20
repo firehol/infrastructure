@@ -1,11 +1,13 @@
-The website is built using a tool called nanoc.
+The website is built using nanoc version 3. There are newer versions
+which are not compatible. At some point the site will be upgraded
+to v4.
 
 To install:
   http://nanoc.ws/install/
 
 Essentially, this as root:
   aptitude install rubygems
-  gem install nanoc
+  gem install nanoc --version 3.8.0
 
 mkdir -p /home/web/firehol
 mkdir -p /home/web/firehol/download
