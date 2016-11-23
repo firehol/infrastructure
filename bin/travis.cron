@@ -1,0 +1,56 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin export PATH
+
+# Pick up files from incoming directory (e.g. travis deployment) and
+# move them to their official destination
+
+if ! MYTMP="`mktemp -d -t travis.cron-XXXXXX`"
+then
+            echo >&2
+            echo >&2
+            echo >&2 "Cannot create temporary directory."
+            echo >&2
+            exit 1
+fi
+
+myexit() {
+  status=$?
+  rm -rf $MYTMP
+  exit $status
+}
+
+trap myexit INT
+trap myexit HUP
+trap myexit 0
+
+CURDIR=`pwd`/
+export CURDIR
+
+set -e
+
+cd "$1"
+
+for f in */*/complete.txt
+do
+  if [ -f "$f" ]
+  then
+    rm -f "$f"
+    d="$(dirname "$f")"
+    project="$(dirname "$d")"
+    release="$(basename "$d")"
+
+    if [ "$2" -a "$project" -a -d "$2/$project" ]
+    then
+      dest="$2/$project/$release"
+      rm -rf "$dest.old"
+      test -d "$dest" && mv "$dest" "$dest.old"
+      mv "$d" "$dest"
+      chown -R web:firehol "$dest"
+      find "$dest" -type d -exec chmod 2775 \{\} \;
+      find "$dest" -type f -exec chmod 664 \{\} \;
+    else
+      echo "No folder $2/$project - not deploying $release"
+    fi
+  fi
+done
