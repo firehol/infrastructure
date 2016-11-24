@@ -1,21 +1,21 @@
 # FireHOL infrastructure
 
-*   [Project releases][]
-    -   [Prerequisites][]
-    -   [Create release][]
-    -   [Push release to github][]
-    -   [Signing the results][]
-    -   [Release troubleshooting][]
-*   [Github and Travis][]
-    -   [Continuous integration][]
-    -   [Deployment][]
-*   [User setup][]
-    -   [GPG key][]
-    -   [Authentication token][]
-*   [firehol.org setup][]
-    -   [Website][]
-    -   [Travis file uploads and publishing to website][]
-    -   [Mailing lists][]
+*   [Project releases](#project-releases)
+    -   [Prerequisites](#prerequisites)
+    -   [Create release](#create-release)
+    -   [Push release to github](#push-release-to-github)
+    -   [Signing the results](#signing-the-results)
+    -   [Release troubleshooting](#release-troubleshooting)
+*   [Github and Travis](#github-and-travis)
+    -   [Continuous integration](continuous-integration)
+    -   [Deployment](#deployment)
+*   [User setup](#user-setup)
+    -   [GPG key](#gpg-key)
+    -   [Authentication token](#authentication-token)
+*   [firehol.org setup](#fireholorg-setup)
+    -   [Website](#website)
+    -   [Travis file uploads and publishing to website](#travis-file-uploads-and-publishing-to-website)
+    -   [Mailing lists](#mailing-lists)
 
 # Project releases
 
@@ -30,9 +30,9 @@ Note
 Ensure local repository hooks are installed, they will take care of all
 the checking and much of the work.
 
-As well as commit rights to the repository, you need a [GPG key] to sign
-and verify the git tag, and in addition an [Authentication token] to
-automate the process of signing the release and uploading the signature.
+As well as commit rights to the repository, you need a [GPG key](#gpg-key)
+to sign and verify the git tag. To automate release signing and signature
+upload, you must set up an [Authentication token](#authentication-token).
 
 ## Create release
 
@@ -99,7 +99,7 @@ Announce on the mailing lists (doc/announce.template) and website.
 ## Release troubleshooting
 
 Signed tags are created automatically provided the commit hooks are in
-place. It can happend that we want to remove a bad tag, however, from
+place. It can happen that we want to remove a bad tag, however, from
 local and from GitHub:
 
 ~~~~
@@ -148,8 +148,8 @@ up as part of the `.travis.yml`.
 ### Repository setup
 
 GitHib/Travis integration for each repository was made using an
-[Authentication token][] with the "Travis CI command line client" on
-a development machine:
+[Authentication token](#authentication-token) with the
+"Travis CI command line client" on a development machine:
 
 ~~~~
 travis setup releases
