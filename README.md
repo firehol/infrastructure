@@ -83,7 +83,7 @@ upload the resulting packages as a github release.
 Run the sign-github-release script e.g.:
 
 ~~~~
-./bin/sign-package firehol x.y.z
+./bin/sign-github-release firehol x.y.z
 ~~~
 
 This will check the signature in git, grab any tar files, verify their
