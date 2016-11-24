@@ -40,9 +40,9 @@ do
     project="$(dirname "$d")"
     release="$(basename "$d")"
 
-    if [ "$2" -a "$project" -a -d "$2/$project" ]
+    if [ "$2" -a "$project" -a -d "$2/$project/unsigned" ]
     then
-      dest="$2/$project/$release"
+      dest="$2/$project/unsigned/$release"
       rm -rf "$dest.old"
       test -d "$dest" && mv "$dest" "$dest.old"
       mv "$d" "$dest"
@@ -50,7 +50,7 @@ do
       find "$dest" -type d -exec chmod 2775 \{\} \;
       find "$dest" -type f -exec chmod 664 \{\} \;
     else
-      echo "No folder $2/$project - not deploying $release"
+      echo "No folder $2/$project/unsigned - not deploying $release"
     fi
   fi
 done
