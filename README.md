@@ -23,7 +23,7 @@ This section applies to `firehol`, `iprange` and `netdata`.
 
 Note
 :   If there is ever a need to release a new FireHOL 1.x, see
-    the notes in `doc/release-firehol-v1.md` instead.
+    the notes in `doc/release-firehol-v1.md` instead of this procedure.
 
 ## Prerequisites
 
@@ -37,8 +37,8 @@ upload, you must set up an [Authentication token](#authentication-token).
 ## Create release
 
 Note
-:   If there is ever a need to release a new FireHOL 1.x, follow
-    the notes in `doc/release-firehol-v2.md` instead.
+:   If there is ever a need to release a new FireHOL 2.x, use the custom
+    steps in `doc/release-firehol-v2.md` instead of this sub-section.
 
 Update `configure.ac` to remove the version suffix or set it to `-rc.nn`,
 update the `ChangeLog` and any `.spec.in` files.
