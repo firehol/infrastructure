@@ -1,0 +1,172 @@
+#!/bin/sh
+
+set -e
+ 
+dir=`pwd`
+
+tmpdir=`mktemp -d`
+trap on_exit EXIT
+on_exit() {
+  stty sane
+  cd $HOME
+  rm -rf $tmpdir
+  return 0
+}
+
+if [ $# -ne 2 ]
+then
+  echo "Usage: sign-github-release package tag"
+  echo " e.g.:"
+  echo "       sign-github-release firehol v3.1.x"
+  exit 1
+fi
+
+package="$1"
+tag="$2"
+
+baseurl="https://github.com/firehol/$package"
+baseapi="https://api.github.com/repos/firehol/$package"
+ver=`echo $tag | sed -e 's/^v//'`
+
+gpgid="$(git config user.signingkey)"
+if [ "$gpgid" = "" ]
+then
+  echo "You need to set up a PGP signing key e.g.:"
+  echo "   gpg --list-keys"
+  echo "and"
+  echo "   git config user.signingkey SHORTID"
+  echo "or"
+  echo "   git config --global user.signingkey SHORTID"
+  exit 1
+fi
+
+if [ -f ~/.firehol-github-oauth ]
+then
+  read apitoken < ~/.firehol-github-oauth
+else
+  cat <<-'_END'
+	This script needs an oauth token installing:
+
+	echo "long-hex-string" > ~/.firehol-github-oauth
+	chmod 600 ~/.firehol-github-oauth
+
+	You can generate a token with "repo" rights here:
+	    https://github.com/settings/tokens
+	_END
+  exit 1
+fi
+
+AUTH="Authorization: token $apitoken"
+curl -s -H "$AUTH" "$baseapi/releases/tags/$tag" > $tmpdir/curl.txt
+relid=$(sed -ne '/"id":/{s/.*"id": *//;s/,.*//p;q}' $tmpdir/curl.txt)
+upload_url=$(sed -ne '/"upload_url":/{s/.*"upload_url": *//;s/{.*//;s/"//g;p;q}' $tmpdir/curl.txt)
+if [ ! "$upload_url" ]
+then
+  cat $tmpdir/curl.txt
+  exit 1
+fi
+
+cd $tmpdir
+sed -ne '/"name":/s/.*\"\([^"]*\.tar\.[^."]*\)".*/\1/p' curl.txt > tarfiles
+
+if [ ! -s tarfiles ]
+then
+  cat curl.txt
+  echo "ERROR: no tarfiles found at $baseapi/releases/tags/$tag" 
+  exit 1
+fi
+
+git clone --depth 1 --single-branch --branch "$tag" "https://github.com/firehol/$package.git" "$package-git"
+
+cd "$package-git"
+git tag -v "$tag"
+cd ..
+
+clean_source() {
+  # Remove elements from files which are expected to change and so confuse
+  # the comparison. The same transformation is applied to the git repo
+  # and to the downloade files.
+  local i=
+
+  for i in $(grep -rl "$Id:" "$1")
+  do
+    sed -i -e '/$Id:/d' "$i"
+  done
+
+  for i in $(grep -rl "GIT_REF=" "$1")
+  do
+    sed -i -e '/GIT_REF=/d' "$i"
+  done
+}
+
+clean_source "$package-git"
+find "$package-git" -type f -print > git-contents
+
+echo "Downloading tarfiles from github releases and verifying checksums"
+while read t
+do
+  curl -s -L -o "$t" "$baseurl/releases/download/$tag/$t"
+  curl -s -L -o "$t.md5" "$baseurl/releases/download/$tag/$t.md5"
+  curl -s -L -o "$t.sha" "$baseurl/releases/download/$tag/$t.sha"
+  md5sum -c "$t.md5"
+  sha512sum -c "$t.sha"
+done < tarfiles
+
+echo "Comparing tarfiles to signed git tar"
+while read t
+do
+  case "$t" in
+    *.xz)
+      opts="CxfJ"
+    ;;
+    *.bz2)
+      opts="Cxfj"
+    ;;
+    *.gz)
+      opts="Cxfz"
+    ;;
+    *)
+      echo "Unhandled extension $t"
+      exit 1
+    ;;
+  esac
+
+  rm -rf downloaded
+  mkdir downloaded
+
+  tar "$opts" downloaded "$t"
+  unpackdir=`ls downloaded | head -n 1`
+  clean_source downloaded
+
+  while read i
+  do
+    j=`echo $i | sed -e "s:package-git:downloaded/$unpackdir:"`
+    if [ -f "$j" ]
+    then
+      if ! cmp $i $j
+      then
+        diff $i $j || true
+        touch $tmpdir/error
+      fi
+    fi
+  done < git-contents
+done < tarfiles
+
+if [ -f "$tmpdir/error" ]
+then
+  exit 1
+fi
+
+while read t
+do
+  echo "Signing $tar"
+  gpg --local-user "$gpgid" --armor --detach-sign $t
+done < tarfiles
+
+for i in *.asc
+do
+  name=`basename $i`
+  echo "Uploading $name"
+  curl -s -H "$AUTH" -H "Content-Type: application/octet-stream" "$upload_url?name=$name" --data-binary "@$i" > $tmpdir/curl.txt
+  grep -q errors $tmpdir/curl.txt && cat $tmpdir/curl.txt
+done
