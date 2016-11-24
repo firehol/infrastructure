@@ -5,13 +5,16 @@ set -e
 dir=`pwd`
 
 tmpdir=`mktemp -d`
-trap on_exit EXIT
 on_exit() {
+  status=$?
   stty sane
   cd $HOME
   rm -rf $tmpdir
-  return 0
+  exit $status
 }
+trap on_exit EXIT
+trap on_exit INT
+trap on_exit HUP
 
 if [ $# -ne 2 ]
 then

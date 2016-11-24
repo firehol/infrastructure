@@ -1,9 +1,0 @@
-Cron configuration
-==================
-
-Add the following to the firehol user's crontab (run `crontab -e`):
-
-~~~~
-* * * * * $HOME/bin/mirror > /dev/null 2> /dev/null
-* * * * * $HOME/bin/process-requests > /dev/null 2> /dev/null
-~~~~
