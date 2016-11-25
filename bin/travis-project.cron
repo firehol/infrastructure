@@ -64,6 +64,7 @@ do
     d="$(dirname "$f")"
     project="$(dirname "$d")"
     release="$(basename "$d")"
+    echo "processing $project - $release"
 
     if [ "$to" -a "$project" -a -d "$to/$project/unsigned" ]
     then
