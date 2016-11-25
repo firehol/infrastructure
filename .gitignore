@@ -1,13 +1,7 @@
-mirrors/
 .bash_history
 .lesshst
 .gnupg
 .selected_editor
-web/requests/
-*.json
-*.asc
-hook-credentials/*.secret
-web/req.*
 .cache
 .config
 .local
