@@ -14,6 +14,7 @@
     -   [Authentication token](#authentication-token)
 *   [firehol.org setup](#fireholorg-setup)
     -   [Website](#website)
+    -   [SSL](#ssl)
     -   [Travis file uploads and publishing to website](#travis-file-uploads-and-publishing-to-website)
     -   [Mailing lists](#mailing-lists)
 
@@ -291,6 +292,29 @@ ln -s /home/web/firehol/master.conf 15-firehol-test
 The master site must have a lower number than all the others so that it
 is used by default.
 
+### SSL
+
+SSL is provided by [Let's Encrypt](https://letsencrypt.org/)
+
+Installation:
+
+~~~~
+cp -rp letsencrypt /usr/local/letsencrypt
+mkdir -p /usr/local/letsencrypt/challenge
+mkdir -p /usr/local/letsencrypt/certs
+git clone https://github.com/lukas2511/dehydrated.git /usr/local/letsencrypt/dehydrated
+echo "10 6 * * 0 root /usr/local/letsencrypt/generate.cron 2>&1" >> /etc/crontab
+~~~~
+
+Testing:
+
+~~~~
+openssl s_client -connect firehol.org:443
+openssl s_client -connect www.firehol.org:443
+openssl s_client -connect test.firehol.org:443
+openssl s_client -connect lists.firehol.org:443
+~~~~
+
 ### Website statistics
 
 Website statistics are generated with webalizer
@@ -335,6 +359,13 @@ The scripts create a log of the most recent deployment attempt:
 
 * [project deployment](https://firehol.org/travis-project.log)
 * [website deployment](https://firehol.org/travis-website.log)
+
+To see them from the command line:
+
+~~~~
+curl https://firehol.org/travis-project.log
+curl https://firehol.org/travis-website.log
+~~~~
 
 ## Mailing lists
 

@@ -1,4 +1,0 @@
-# This file is sourced by automated scripts to set up common values
-config_mirror=$HOME/etc/mirrors.conf
-config_build=$HOME/etc/build.conf
-config_lockdir=/tmp/firehol-infrastructure-locks
