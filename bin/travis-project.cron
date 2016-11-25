@@ -29,20 +29,45 @@ export CURDIR
 
 set -e
 
-cd "$1"
+if [ $# -ne 3 ]
+then
+   echo "Usage: $0 from-dir to-dir logfile"
+   exit 1
+fi
+
+from="$1"
+to="$2"
+log="$3"
+
+started_log=
+start_log() {
+  if [ "$started_log" ]
+  then
+    return 0
+  fi
+  # Send all output to log file
+  exec > "$1"
+  exec 2>&1
+  date
+  echo "Starting project deployments"
+  started_log=Y
+}
+
+cd "$from"
 
 for f in */*/complete.txt
 do
   if [ -f "$f" ]
   then
+    start_log "$log"
     rm -f "$f"
     d="$(dirname "$f")"
     project="$(dirname "$d")"
     release="$(basename "$d")"
 
-    if [ "$2" -a "$project" -a -d "$2/$project/unsigned" ]
+    if [ "$to" -a "$project" -a -d "$to/$project/unsigned" ]
     then
-      dest="$2/$project/unsigned/$release"
+      dest="$to/$project/unsigned/$release"
       rm -rf "$dest.old"
       test -d "$dest" && mv "$dest" "$dest.old"
       mv "$d" "$dest"
@@ -50,7 +75,7 @@ do
       find "$dest" -type d -exec chmod 2775 \{\} \;
       find "$dest" -type f -exec chmod 664 \{\} \;
     else
-      echo "No folder $2/$project/unsigned - not deploying $release"
+      echo "No folder $to/$project/unsigned - not deploying $release"
     fi
   fi
 done

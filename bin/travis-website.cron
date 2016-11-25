@@ -1,0 +1,101 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin export PATH
+
+# Pick up websites from incoming directory (e.g. travis deployment) and
+# move them to their official destination
+
+if ! MYTMP="`mktemp -d -t travis.cron-XXXXXX`"
+then
+            echo >&2
+            echo >&2
+            echo >&2 "Cannot create temporary directory."
+            echo >&2
+            exit 1
+fi
+
+myexit() {
+  status=$?
+  rm -rf $MYTMP
+  exit $status
+}
+
+trap myexit INT
+trap myexit HUP
+trap myexit 0
+
+CURDIR=`pwd`/
+export CURDIR
+
+set -e
+
+if [ $# -ne 3 ]
+then
+   echo "Usage: $0 from-dir to-dir logfile"
+   exit 1
+fi
+
+from="$1"
+to="$2"
+log="$3"
+
+started_log=
+start_log() {
+  if [ "$started_log" ]
+  then
+    return 0
+  fi
+  # Send all output to log file
+  exec > "$1"
+  exec 2>&1
+  date
+  echo "Starting website deployments"
+  started_log=Y
+}
+
+cd "$from"
+
+for f in */complete.txt
+do
+  if [ -f "$f" ]
+  then
+    start_log "$log"
+    branch="$(dirname "$f")"
+    echo "processing $branch"
+    rm -f "$f"
+
+    if [ "$to" -a "$branch" -a -f "$to/$branch.conf" ]
+    then
+      rm -rf "$to/$branch.old" "$to/$branch.failed"
+      rm -rf "$to/$branch.conf.old" "$to/$branch.conf.failed"
+
+      mv "$to/$branch" "$to/$branch.old"
+      mv "$to/$branch.conf" "$to/$branch.conf.old"
+
+      mv "$branch/$branch" "$to/$branch"
+      mv "$branch/$branch.conf" "$to/$branch.conf"
+      chown -R firehol:firehol "$to/$branch"
+      find "$to/$branch" -type d -exec chmod 2775 \{\} \;
+      find "$to/$branch" -type f -exec chmod 664 \{\} \;
+
+      nginx -t
+      if [ $? -eq 0 ]
+      then
+        sudo /etc/init.d/nginx restart
+      else
+        echo "not deploying $branch due to nginx config error"
+        # Roll back to prior version
+        mv "$to/$branch" "$to/$branch.failed"
+        mv "$to/$branch.conf" "$to/$branch.conf.failed"
+        mv "$to/$branch.old" "$to/$branch"
+        mv "$to/$branch.conf.old" "$to/$branch.conf"
+      fi
+      rm -rf "$branch"
+    else
+      echo "No nginx config $to/$branch.conf - not deploying $branch"
+      rm -rf "$branch.failed"
+      mv "$branch" "$branch.failed"
+      exit 1
+    fi
+  fi
+done

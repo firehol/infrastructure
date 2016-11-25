@@ -291,14 +291,6 @@ ln -s /home/web/firehol/master.conf 15-firehol-test
 The master site must have a lower number than all the others so that it
 is used by default.
 
-The scripts which deploy the website need to be able to restart nginx,
-so an entry such as the following should be added to `/etc/sudoers`:
-
-~~~~
-firehol ALL=(ALL:ALL) NOPASSWD: /etc/init.d/nginx restart
-firehol ALL=(ALL:ALL) NOPASSWD: /usr/sbin/nginx -t
-~~~~
-
 ### Website statistics
 
 Website statistics are generated with webalizer
@@ -329,14 +321,20 @@ chmod +x /etc/cron.daily/webalizer-firehol
 ## Travis file uploads and publishing to website
 
 ~~~~
-    sudo -i
-    useradd -m travis
-    mkdir /home/travis/.ssh
-    cp /home/firehol/travis/authorized_keys /home/travis/.ssh
-    chown -R travis:travis /home/travis/.ssh
-    chmod 0700 /home/travis/.ssh
-    echo "* * * * * root /home/firehol/bin/travis.cron /home/travis/uploads /home/web/firehol/download" >> /etc/crontab
+sudo -i
+useradd -m travis
+mkdir /home/travis/.ssh
+cp /home/firehol/travis/authorized_keys /home/travis/.ssh
+chown -R travis:travis /home/travis/.ssh
+chmod 0700 /home/travis/.ssh
+echo "* * * * * root /home/firehol/bin/travis-project.cron /home/travis/uploads /home/web/firehol/download /home/web/firehol/static/travis-project.log" >> /etc/crontab
+echo "* * * * * root /home/firehol/bin/travis-website.cron /home/travis/website /home/web/firehol /home/web/firehol/static/travis-website.log" >> /etc/crontab
 ~~~~
+
+The scripts create a log of the most recent deployment attempt:
+
+* [project deployment](https://firehol.org/travis-project.log)
+* [website deployment](https://firehol.org/travis-website.log)
 
 ## Mailing lists
 
