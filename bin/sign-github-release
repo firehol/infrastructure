@@ -66,6 +66,11 @@ upload_url=$(sed -ne '/"upload_url":/{s/.*"upload_url": *//;s/{.*//;s/"//g;p;q}'
 if [ ! "$upload_url" ]
 then
   cat $tmpdir/curl.txt
+  case "$tag" in
+    [0-9]*)
+      echo "Tag must be exact - are you missing a leading v from '$tag'?"
+    ;;
+  esac
   exit 1
 fi
 
