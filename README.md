@@ -85,7 +85,7 @@ Run the sign-github-release script e.g.:
 
 ~~~~
 ./bin/sign-github-release firehol x.y.z
-~~~
+~~~~
 
 This will check the signature in git, grab any tar files, verify their
 checksums and the compare the contents against git to ensure it all
