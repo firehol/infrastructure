@@ -167,7 +167,7 @@ fi
 
 while read t
 do
-  echo "Signing $tar"
+  echo "Signing $t with $gpgid"
   gpg --local-user "$gpgid" --armor --detach-sign $t
 done < tarfiles
 

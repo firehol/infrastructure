@@ -2,7 +2,7 @@
 
 These instructions replace the `Create release` section of the common
 release procedure for FireHOL v2 only. v1 has its own procedure and
-v3 should follow the commin procedure verbatim.
+v3 should follow the common procedure verbatim.
 
 ## Create release
 
