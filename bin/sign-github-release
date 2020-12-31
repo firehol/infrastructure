@@ -16,19 +16,20 @@ trap on_exit EXIT
 trap on_exit INT
 trap on_exit HUP
 
-if [ $# -ne 2 ]
+if [ $# -ne 3 ]
 then
-  echo "Usage: sign-github-release package tag"
+  echo "Usage: sign-github-release repo package tag"
   echo " e.g.:"
-  echo "       sign-github-release firehol v3.1.x"
+  echo "       sign-github-release firehol firehol v3.1.x"
   exit 1
 fi
 
-package="$1"
-tag="$2"
+repo="$1"
+package="$2"
+tag="$3"
 
-baseurl="https://github.com/firehol/$package"
-baseapi="https://api.github.com/repos/firehol/$package"
+baseurl="https://github.com/$repo/$package"
+baseapi="https://api.github.com/repos/$repo/$package"
 ver=`echo $tag | sed -e 's/^v//'`
 
 gpgid="$(git config user.signingkey)"
@@ -43,15 +44,15 @@ then
   exit 1
 fi
 
-if [ -f ~/.firehol-github-oauth ]
+if [ -f ~/.$repo-github-oauth ]
 then
-  read apitoken < ~/.firehol-github-oauth
+  read apitoken < ~/.$repo-github-oauth
 else
-  cat <<-'_END'
+  cat <<-_END
 	This script needs an oauth token installing:
 
-	echo "long-hex-string" > ~/.firehol-github-oauth
-	chmod 600 ~/.firehol-github-oauth
+	echo "long-hex-string" > ~/.$repo-github-oauth
+	chmod 600 ~/.$repo-github-oauth
 
 	You can generate a token with "repo" rights here:
 	    https://github.com/settings/tokens
@@ -84,7 +85,7 @@ then
   exit 1
 fi
 
-git clone --depth 1 --single-branch --branch "$tag" "https://github.com/firehol/$package.git" "$package-git"
+git clone --depth 1 --single-branch --branch "$tag" "https://github.com/$repo/$package.git" "$package-git"
 
 cd "$package-git"
 git tag -v "$tag"
@@ -175,6 +176,6 @@ for i in *.asc
 do
   name=`basename $i`
   echo "Uploading $name"
-  curl -s -H "$AUTH" -H "Content-Type: application/octet-stream" "$upload_url?name=$name" --data-binary "@$i" > $tmpdir/curl.txt
-  grep -q errors $tmpdir/curl.txt && cat $tmpdir/curl.txt
+  curl -s -H "$AUTH" -H "Content-Type: text/plain" "$upload_url?name=$name" --data-binary "@$i" > $tmpdir/curl.txt
+  grep -q 'created_at' $tmpdir/curl.txt || cat $tmpdir/curl.txt
 done
