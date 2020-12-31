@@ -92,7 +92,8 @@ checksums and the compare the contents against git to ensure it all
 matches.
 
 If everything is OK, detached signatures are created for each tar-file
-and the results uploaded to the github release.
+and the results uploaded to the github release. It is now ready to be
+published from the website.
 
 Announce on the mailing lists (doc/announce.template) and website.
 
@@ -116,12 +117,15 @@ they will get conflicts later on if we re-use the tag.
 
 ## Continuous integration
 
+Tools are moving over to GitHub actions, so this is mostly out of
+date. If a project has `.github/workflows/publish.yml`, the rest
+of this section can be ignored.
+
 The FireHOL tools are built, tested and deployed by linking the
 [travis-ci](https://travis-ci.org/) with GitHub. Current status
 can be seen here, by administrators of the firehol project:
 
 * [FireHOL](https://travis-ci.org/firehol/firehol)
-* [iprange](https://travis-ci.org/firehol/iprange)
 * [netdata](https://travis-ci.org/firehol/netdata)
 
 Each repository contains a `.travis.yml` file which controls
